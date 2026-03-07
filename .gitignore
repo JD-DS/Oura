@@ -1,0 +1,42 @@
+# Environment & secrets
+.env
+tokens.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing & linting
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+coverage.xml
+.coverage
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Database (if used)
+*.sqlite
+*.db
