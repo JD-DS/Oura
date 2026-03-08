@@ -10,6 +10,7 @@ A Python development sandbox for building and testing applications with the [Our
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Data Boundaries](#data-boundaries-what-stays-local-vs-whats-in-the-repo)
 - [How Authentication Works](#how-authentication-works)
 - [Running the Project](#running-the-project)
 - [Web Dashboard](#web-dashboard)
@@ -61,11 +62,36 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-For development (tests, linting):
+For development (tests, linting, pre-commit):
 
 ```bash
 pip install -e ".[dev]"
+pip install pre-commit && pre-commit install
 ```
+
+Pre-commit blocks `.env`, `tokens.json`, `data/`, and `*.db`/`*.sqlite` from being committed.
+
+Optional: Install pre-commit hooks to block secrets and personal data from being committed:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+---
+
+## Data Boundaries: What Stays Local vs What's in the Repo
+
+This repo is a **framework** you clone and configure. Your personal data and secrets never belong in the repo.
+
+| Stays local (never commit) | In the repo |
+|---------------------------|-------------|
+| `.env` — OAuth credentials, API keys, tokens | `.env.example` — template with placeholders |
+| `tokens.json` — OAuth tokens (if used) | Code, config templates, docs |
+| `data/` — Excel imports, blood panel PDFs, workout logs | `docs/data/` — redacted sample files for schema docs |
+| `*.sqlite`, `*.db` — local databases | |
+
+**Clone-and-configure workflow:** Clone → copy `.env.example` to `.env` → add your credentials → run. Your data never touches the repo.
 
 ---
 
@@ -92,6 +118,21 @@ OURA_REDIRECT_URI=http://localhost:8501/
 - **CLI auth (OuraAuth):** `http://localhost:8080/callback` — used when running `auth.authorize()` from Python; a local server listens on port 8080
 
 If you use both the CLI and the dashboard, register both redirect URIs in your [Oura OAuth application settings](https://developer.ouraring.com/applications).
+
+---
+
+## Data Boundaries: What Stays Local vs. What's in the Repo
+
+This repo is a **framework** — clone it, add your credentials, and your data never touches the codebase.
+
+| Stays local (never committed) | In the repo |
+|--------------------------------|-------------|
+| `.env` — OAuth credentials, API keys, tokens | `.env.example` — template with placeholders |
+| `tokens.json` — OAuth tokens (CLI auth fallback) | Code, config templates, docs |
+| `data/` — Your health data (Excel, PDFs, lab results, workout logs) | `docs/data/` — Redacted sample files for schema docs |
+| `*.sqlite`, `*.db` — Local databases | |
+
+**Clone-and-configure workflow:** Clone → copy `.env.example` to `.env` → add your credentials → run. Your personal data stays in `data/` at the project root (or a path you set via `DATA_DIR` in `.env`).
 
 ---
 
@@ -256,6 +297,17 @@ pytest
 
 All 18 tests use the Oura sandbox endpoints, so no credentials or real data are required.
 
+### Pre-commit (optional)
+
+To block secrets and personal data from being committed, and run ruff + tests on each commit:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+Hooks will run automatically on `git commit`. Run manually: `pre-commit run --all-files`
+
 ---
 
 ## Deployment
@@ -271,6 +323,8 @@ All 18 tests use the Oura sandbox endpoints, so no credentials or real data are 
    - `OURA_REDIRECT_URI` (your Streamlit Cloud app URL, e.g. `https://oura-dashboard.streamlit.app/`)
 5. Register that redirect URI in your [Oura OAuth application](https://developer.ouraring.com/applications).
 6. Deploy. Streamlit Cloud auto-deploys on every push to `main`.
+
+**Privacy on Streamlit Cloud:** Store secrets only in the Cloud app's Secrets UI — never in the repo. User OAuth tokens live in session state and are not persisted; users reconnect each session. Uploaded files (Excel, PDF) and imported data are not supported on Cloud unless you add an external database configured via environment variables.
 
 ---
 

@@ -40,3 +40,7 @@ Thumbs.db
 # Database (if used)
 *.sqlite
 *.db
+
+# User health data (Excel, PDFs, lab results, workout logs)
+# /data/ = root-level only; docs/data/ can hold redacted sample files
+/data/

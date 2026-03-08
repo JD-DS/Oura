@@ -55,6 +55,13 @@ CACHE_TTL_SECONDS = _env_int("CACHE_TTL_SECONDS", 300)
 
 DEFAULT_DATE_RANGE_DAYS = _env_int("DEFAULT_DATE_RANGE_DAYS", 30)
 
+# --- User Data Storage (Phase 4: Excel, PDF imports) ---
+
+DATA_DIR = _env("DATA_DIR", "data")
+# Resolved path for health_import (project root / DATA_DIR)
+_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR_ABSOLUTE = str(_PROJECT_ROOT / DATA_DIR) if not Path(DATA_DIR).is_absolute() else DATA_DIR
+
 # --- Chart Theme ---
 
 CHART_TEMPLATE = _env("CHART_TEMPLATE", "plotly_dark")
