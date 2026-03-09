@@ -1,63 +1,65 @@
-# TODO — Remaining Work
+# TODO — Future Work
 
-This document tracks what still needs to be built or improved in the Oura Ring API sandbox project.
-
----
-
-## Phase 3: AI Health Assistant (High Priority)
-
-The main planned feature. Full implementation plan in [03_ai_health_assistant.md](03_ai_health_assistant.md).
-
-### Core Implementation
-
-- [ ] **Agent orchestration layer** — Conversation loop with tool-calling LLM (Claude or GPT-4o)
-- [ ] **Oura Data Tool** — Wrapper around `OuraClient` for the agent to fetch and summarize data on demand
-- [ ] **PubMed Search Tool** — NCBI E-utilities integration for biomedical literature search
-- [ ] **Statistical Analysis Tool** — Correlation, trend, and comparison helpers for the agent
-- [ ] **Chart Generation Tool** — Generate inline Plotly charts in chat responses
-- [ ] **Streamlit chat UI** — `st.chat_message` interface with conversation memory in session state
-- [ ] **LLM provider abstraction** — Support both Anthropic and OpenAI, configurable via `AI_PROVIDER`
-
-### Dependencies
-
-- [ ] Add `anthropic` and `openai` to `requirements.txt` (or optional `ai` extra)
-- [ ] Document `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `NCBI_API_KEY`, `NCBI_EMAIL` in `.env.example`
+This document tracks remaining improvements and future features. **Phase 3 (AI Assistant) and Phase 4 (External Data) are complete.**
 
 ---
 
-## Dashboard Improvements (Medium Priority)
+## Completed (Phase 3 & 4)
 
-- [ ] **Persistent token storage** — Consider encrypted cookie or secure session storage so users don't have to reconnect every time
-- [ ] **Export data** — Allow users to export date-range data as CSV
+### Phase 3: AI Health Assistant
+- [x] Agent orchestration with tool-calling (Claude/GPT-4o)
+- [x] Oura Data, PubMed, statistical analysis, chart generation tools
+- [x] Streamlit chat UI with conversation memory
+- [x] LLM provider abstraction (Anthropic + OpenAI)
+- [x] AI Assistant extended to query imported data and lab results
+
+### Phase 4: External Health Data
+- [x] Excel/CSV import (steps, calories, workouts)
+- [x] Blood panel PDF parsing (pdfplumber)
+- [x] SQLite storage (activity + lab_results)
+- [x] Import Data page (Excel + PDF tabs)
+- [x] Lab Results page (biomarker trends, reference ranges)
+- [x] Activity, Correlations, Anomaly: merge imported metrics
+- [x] Export CSV (sidebar download)
+- [x] Data privacy: check_no_secrets, .gitignore, pre-commit
+
+---
+
+## Future Work
+
+### Phase 4 Extensions (Medium Priority)
+- [ ] **Lab–Oura correlations** — Correlate biomarkers with Oura metrics (e.g. HRV vs inflammation, sleep vs glucose)
+- [ ] **Lab anomaly detection** — Extend anomaly detection to lab trends (rising LDL, declining vitamin D)
+- [ ] **Data deduplication** — When Oura and Excel both have steps/calories, allow user to choose primary source or merge strategy
+- [ ] **Varied PDF formats** — Configurable extraction rules or manual override for labs with different layouts
+- [ ] **Unified date-range API** — Single data layer returning Oura + Excel + labs for a date range
+
+### AI-Powered Universal File Wrapper (Future-Proof)
+- [ ] **LLM file parser** — Accept any file type, use AI to identify structure/schema, extract health data
+- [ ] **On-the-fly ingestion** — Upload arbitrary health files; AI infers columns, dates, biomarkers
+
+### Dashboard Improvements (Medium Priority)
+- [ ] **Persistent token storage** — Encrypted cookie or session storage so users don't reconnect every time
 - [ ] **Mobile responsiveness** — Verify and improve layout on smaller screens
-- [ ] **Error handling** — More graceful handling of API errors (rate limits, token expiry) with user-friendly messages
+- [ ] **Error handling** — Graceful handling of API errors (rate limits, token expiry)
 
----
-
-## Library & Infrastructure (Low Priority)
-
-- [ ] **Webhook support** — Implement webhook registration and handling for real-time data updates (see Oura API docs)
-- [ ] **Async client** — Add async variants of API methods for high-throughput use cases
-- [ ] **Pre-commit hooks** — Add ruff, pytest to pre-commit for consistent CI
+### Library & Infrastructure (Low Priority)
+- [ ] **Webhook support** — Real-time data updates (see Oura API docs)
+- [ ] **Async client** — Async variants for high-throughput use cases
 - [ ] **GitHub Actions** — CI workflow for tests and lint on push/PR
+- [ ] **Privacy enhancements** — Document storage location; optional encryption for sensitive data
+
+### Documentation & Polish (Low Priority)
+- [ ] **API usage examples** — More code snippets in README for each data type
+- [ ] **Troubleshooting guide** — OAuth errors, redirect URI mismatches, sandbox vs production
+- [ ] **Changelog** — CHANGELOG.md for releases
 
 ---
 
-## Documentation & Polish (Low Priority)
+## Quick Start When Resuming
 
-- [ ] **API usage examples** — Add more code snippets to README for each data type
-- [ ] **Troubleshooting guide** — Common OAuth errors, redirect URI mismatches, sandbox vs production
-- [ ] **Changelog** — Maintain a CHANGELOG.md for releases
-
----
-
-## Completed
-
-- [x] Core API client with all 16 data types
-- [x] OAuth2 auth (CLI and web flows)
-- [x] Sandbox mode for development without real data
-- [x] 7-page Streamlit dashboard
-- [x] Centralized config via `.env` and `config.py`
-- [x] Jupyter notebooks for exploration
-- [x] 18 tests using sandbox endpoints
-- [x] Deployment docs for Streamlit Community Cloud
+1. **Branch:** `feature/phase3-phase4-complete`
+2. **Run dashboard:** `streamlit run apps/dashboard/app.py`
+3. **AI Assistant:** Set `AI_PROVIDER` and `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` in `.env`
+4. **Import data:** Use Import Data page for Excel/CSV and lab PDFs
+5. **Pre-commit:** `pip install pre-commit && pre-commit install`
