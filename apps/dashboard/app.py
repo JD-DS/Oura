@@ -64,6 +64,26 @@ with st.sidebar:
             st.session_state["sandbox_mode"] = False
 
     st.markdown("---")
+    st.markdown("### Export")
+    from components.data import get_all_daily_data_with_imported
+    token = st.session_state.get("access_token", "")
+    sandbox = st.session_state.get("sandbox_mode", False)
+    start_str = st.session_state.get("start_date", str(start_default))
+    end_str = st.session_state.get("end_date", str(today))
+    if token:
+        export_df = get_all_daily_data_with_imported(token, start_str, end_str, sandbox)
+        if not export_df.empty:
+            csv_bytes = export_df.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                "Download CSV",
+                data=csv_bytes,
+                file_name=f"oura_export_{start_str}_{end_str}.csv",
+                mime="text/csv",
+                use_container_width=True,
+            )
+        else:
+            st.caption("No data to export")
+    st.markdown("---")
     if st.button("Logout", use_container_width=True):
         logout()
         st.rerun()
@@ -77,6 +97,9 @@ activity_page = st.Page("pages/4_activity.py", title="Activity", icon="🏃")
 hr_stress_page = st.Page("pages/5_heart_rate_stress.py", title="Heart Rate & Stress", icon="❤️")
 correlations_page = st.Page("pages/6_correlations.py", title="Correlations", icon="🔗")
 anomalies_page = st.Page("pages/7_anomalies.py", title="Anomaly Detection", icon="🔍")
+assistant_page = st.Page("pages/8_assistant.py", title="AI Assistant", icon="🤖")
+import_page = st.Page("pages/9_import.py", title="Import Data", icon="📥")
+labs_page = st.Page("pages/10_labs.py", title="Lab Results", icon="🧪")
 
 nav = st.navigation([
     dashboard_page,
@@ -86,6 +109,9 @@ nav = st.navigation([
     hr_stress_page,
     correlations_page,
     anomalies_page,
+    assistant_page,
+    import_page,
+    labs_page,
 ])
 
 nav.run()

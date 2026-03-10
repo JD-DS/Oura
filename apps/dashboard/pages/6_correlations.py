@@ -12,7 +12,7 @@ from config import (
     default_end_date,
     default_start_date,
 )
-from components.data import get_all_daily_data
+from components.data import get_all_daily_data_with_imported
 from components.charts import scatter_with_trend, correlation_matrix
 
 token = st.session_state.get("access_token", "")
@@ -21,8 +21,9 @@ start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
 st.header("Correlations Engine")
+st.caption("Includes Oura metrics and imported data (steps, calories, workouts) when available.")
 
-daily = get_all_daily_data(token, start, end, sandbox)
+daily = get_all_daily_data_with_imported(token, start, end, sandbox)
 
 if daily.empty:
     st.info("No data available. Try expanding the date range or enabling sandbox mode.")

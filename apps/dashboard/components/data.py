@@ -14,7 +14,7 @@ import streamlit as st
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "src"))
 
-from config import CACHE_TTL_SECONDS
+from config import CACHE_TTL_SECONDS, DATA_DIR_ABSOLUTE
 from oura_client.auth import OuraAuth
 from oura_client.client import OuraClient
 
@@ -178,6 +178,19 @@ def get_heart_rate_df(
     return df.sort_values("timestamp").reset_index(drop=True)
 
 
+@st.cache_data(ttl=60, show_spinner=False)  # Short TTL: imports update filesystem
+def get_imported_activity_df(data_dir: str, start: str, end: str) -> pd.DataFrame:
+    """Fetch imported activity (steps, calories, workouts) from local store."""
+    try:
+        from src.health_import import query_activity
+        df = query_activity(data_dir, start, end)
+        if not df.empty and "date" in df.columns:
+            df = df.rename(columns={"date": "day"})
+        return df
+    except Exception:
+        return pd.DataFrame()
+
+
 @st.cache_data(ttl=CACHE_TTL_SECONDS, show_spinner="Fetching workout data...")
 def get_workouts_df(_token: str, start: str, end: str, sandbox: bool = False) -> pd.DataFrame:
     client = _make_client(_token, sandbox)
@@ -235,3 +248,34 @@ def get_all_daily_data(token: str, start: str, end: str, sandbox: bool = False) 
         merged = merged.sort_values("day").reset_index(drop=True)
 
     return merged
+
+
+def get_all_daily_data_with_imported(token: str, start: str, end: str, sandbox: bool = False) -> pd.DataFrame:
+    """Merge Oura daily data with imported activity (steps, calories, workouts) for Correlations/Anomaly pages."""
+    daily = get_all_daily_data(token, start, end, sandbox)
+    imported = get_imported_activity_df(DATA_DIR_ABSOLUTE, start, end)
+    if not imported.empty:
+        imp_merge = imported.rename(columns={
+            "steps": "steps_imported",
+            "calories": "calories_imported",
+            "workouts": "workouts_imported",
+            "weight": "weight_imported",
+            "sleep_hours": "sleep_hours_imported",
+        })
+        imp_cols = ["day"] + [c for c in imp_merge.columns if c != "day" and c.endswith("_imported")]
+        imp_merge = imp_merge[[c for c in imp_cols if c in imp_merge.columns]]
+        if not daily.empty:
+            daily = daily.merge(imp_merge, on="day", how="outer").sort_values("day").reset_index(drop=True)
+        else:
+            daily = imp_merge
+    return daily
+
+
+@st.cache_data(ttl=60, show_spinner=False)
+def get_lab_results_df(data_dir: str, start: str, end: str) -> pd.DataFrame:
+    """Fetch lab results for a date range."""
+    try:
+        from src.health_import import query_lab_results
+        return query_lab_results(data_dir, start, end)
+    except Exception:
+        return pd.DataFrame()

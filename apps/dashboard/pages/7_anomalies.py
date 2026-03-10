@@ -5,7 +5,11 @@ import pandas as pd
 import numpy as np
 
 from config import ANOMALY_WINDOW_DAYS, ANOMALY_Z_THRESHOLD, default_start_date, default_end_date
-from components.data import get_all_daily_data, get_sleep_df, get_readiness_df
+from components.data import (
+    get_all_daily_data_with_imported,
+    get_sleep_df,
+    get_readiness_df,
+)
 from components.charts import anomaly_timeline
 
 token = st.session_state.get("access_token", "")
@@ -16,10 +20,10 @@ end = st.session_state.get("end_date", str(default_end_date()))
 st.header("Anomaly Detection")
 st.caption(
     "Detect unusual patterns in your health metrics using rolling z-scores. "
-    "Anomalies may indicate illness onset, overtraining, or environmental changes."
+    "Includes Oura and imported data (steps, calories)."
 )
 
-daily = get_all_daily_data(token, start, end, sandbox)
+daily = get_all_daily_data_with_imported(token, start, end, sandbox)
 sleep_df = get_sleep_df(token, start, end, sandbox)
 readiness_df = get_readiness_df(token, start, end, sandbox)
 
@@ -51,6 +55,16 @@ if not sleep_df.empty and "lowest_hr" in sleep_df.columns and sleep_df["lowest_h
 if "spo2_avg" in daily.columns and daily["spo2_avg"].notna().any():
     st.subheader("Blood Oxygen (SpO2)")
     fig = anomaly_timeline(daily, "day", "spo2_avg", window, threshold, "SpO2 Anomalies")
+    st.plotly_chart(fig, use_container_width=True)
+
+if "steps_imported" in daily.columns and daily["steps_imported"].notna().any():
+    st.subheader("Steps (imported)")
+    fig = anomaly_timeline(daily, "day", "steps_imported", window, threshold, "Steps (imported) Anomalies")
+    st.plotly_chart(fig, use_container_width=True)
+
+if "calories_imported" in daily.columns and daily["calories_imported"].notna().any():
+    st.subheader("Calories (imported)")
+    fig = anomaly_timeline(daily, "day", "calories_imported", window, threshold, "Calories (imported) Anomalies")
     st.plotly_chart(fig, use_container_width=True)
 
 st.subheader("Illness Early Warning")
@@ -91,7 +105,9 @@ else:
 st.subheader("All Detected Anomalies")
 
 anomaly_metrics = []
-for col in ["temp_dev", "avg_hrv", "lowest_hr", "spo2_avg"]:
+imported_cols = [c for c in ["steps_imported", "calories_imported", "workouts_imported"] if c in daily.columns]
+all_metrics = ["temp_dev", "avg_hrv", "lowest_hr", "spo2_avg"] + imported_cols
+for col in all_metrics:
     source_df = readiness_df if col in readiness_df.columns else (
         sleep_df if not sleep_df.empty and col in sleep_df.columns else daily
     )
@@ -105,7 +121,7 @@ for col in ["temp_dev", "avg_hrv", "lowest_hr", "spo2_avg"]:
     z = ((series - roll_mean) / roll_std.replace(0, np.nan)).abs()
     flagged = z > threshold
     if flagged.any():
-        for idx in source_df.index[flagged]:
+        for idx in flagged[flagged].index:
             anomaly_metrics.append({
                 "day": source_df.loc[idx, "day"],
                 "metric": col.replace("_", " ").title(),
