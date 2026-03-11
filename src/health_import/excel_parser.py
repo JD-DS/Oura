@@ -42,7 +42,8 @@ def _parse_date(val) -> str | None:
         return val.strftime("%Y-%m-%d")
     if isinstance(val, (int, float)):
         try:
-            return pd.Timestamp(val).strftime("%Y-%m-%d")
+            # Interpret numeric values as Excel serial dates (days since 1899-12-30)
+            return pd.to_datetime(val, origin="1899-12-30", unit="D").strftime("%Y-%m-%d")
         except Exception:
             return None
     s = str(val).strip()
