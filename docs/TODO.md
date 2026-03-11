@@ -71,10 +71,10 @@ Integrate and persist health data from user-uploaded files (Excel, PDF) alongsid
 - [x] **Persistent storage** — Save extracted results; support multiple panels over time (historical + new uploads)
 - [x] **Incremental updates** — Add new PDFs as they arrive; associate each panel with a date (from PDF or user input); save old results, append new ones
 - [x] **Dashboard integration** — New "Lab Results" page: biomarker trend lines, reference range bands, flag out-of-range values, comparison across draw dates
-- [ ] **Correlations** — Correlate biomarkers with Oura metrics (e.g. HRV vs inflammation markers, sleep vs glucose)
-- [ ] **Anomaly detection** — Extend anomaly detection to lab trends (e.g. rising LDL, declining vitamin D)
+- [x] **Correlations** — Correlate biomarkers with Oura metrics (e.g. HRV vs inflammation markers, sleep vs glucose) — Correlations page
+- [x] **Anomaly detection** — Extend anomaly detection to lab trends (e.g. rising LDL, declining vitamin D) — Anomaly page
 - [x] **AI Assistant integration** — Agent can interpret lab results, explain reference ranges (lab_results tool)
-- [ ] **Varied PDF formats** — Different labs use different layouts; configurable extraction rules or manual override for edge cases
+- [x] **Varied PDF formats** — Different labs use different layouts; configurable extraction via JSON config + text-line fallback parser
 
 ### AI-Powered Universal File Wrapper (Future-Proof)
 
@@ -85,9 +85,9 @@ Integrate and persist health data from user-uploaded files (Excel, PDF) alongsid
 ### Cross-Cutting
 
 - [x] **File upload UI** — Streamlit file uploader for Excel and PDF; preview parsed data before saving; store in user data directory (configurable path)
-- [ ] **Data deduplication** — When Oura and Excel both have steps/calories, allow user to choose primary source or merge strategy
-- [ ] **Unified date-range queries** — Single API/data layer that returns Oura + Excel + blood panel data for a date range
-- [ ] **Export** — Allow exporting combined dataset (Oura + Excel + labs) as CSV for backup or external analysis
+- [x] **Data deduplication** — When Oura and Excel both have steps/calories, allow user to choose primary source or merge strategy (Correlations page)
+- [x] **Unified date-range queries** — `get_all_daily_data_with_imported()` merges Oura + Excel for any date range
+- [x] **Export** — Sidebar CSV export includes Oura + imported data for the selected date range
 - [ ] **Privacy** — Ensure user data stays local; document storage location; optional encryption for sensitive health data
 - [x] **Dependencies** — Add `openpyxl`, `pdfplumber` to requirements
 - [x] **Sample files** — Add example CSV to `docs/data/`; PDF sample when pipeline is built
@@ -107,7 +107,7 @@ Integrate and persist health data from user-uploaded files (Excel, PDF) alongsid
 
 - [ ] **Webhook support** — Implement webhook registration and handling for real-time data updates (see Oura API docs)
 - [ ] **Async client** — Add async variants of API methods for high-throughput use cases
-- [ ] **Pre-commit hooks** — Add ruff, pytest to pre-commit for consistent CI
+- [x] **Pre-commit hooks** — Add ruff, pytest to pre-commit for consistent CI (`.pre-commit-config.yaml`)
 - [ ] **GitHub Actions** — CI workflow for tests and lint on push/PR
 
 ---
@@ -126,8 +126,15 @@ Integrate and persist health data from user-uploaded files (Excel, PDF) alongsid
 - [x] Core API client with all 16 data types
 - [x] OAuth2 auth (CLI and web flows)
 - [x] Sandbox mode for development without real data
-- [x] 7-page Streamlit dashboard
+- [x] 10-page Streamlit dashboard (Dashboard, Sleep, Readiness, Activity, HR/Stress, Correlations, Anomalies, AI Assistant, Import, Labs)
 - [x] Centralized config via `.env` and `config.py`
 - [x] Jupyter notebooks for exploration
 - [x] 18 tests using sandbox endpoints
 - [x] Deployment docs for Streamlit Community Cloud
+- [x] AI Health Assistant with PubMed search and chart generation
+- [x] Excel/CSV import with persistent storage
+- [x] Blood panel PDF parsing with reference ranges
+- [x] Lab biomarker correlations with Oura metrics
+- [x] Lab trend anomaly detection
+- [x] Data deduplication strategies for overlapping sources
+- [x] Pre-commit hooks (ruff, pytest, secrets check)
