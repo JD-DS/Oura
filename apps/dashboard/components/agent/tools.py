@@ -205,7 +205,7 @@ def _run_lab_results(args: dict) -> str:
     if not start or not end:
         return "Error: start_date and end_date required."
     try:
-        from src.health_import import query_lab_results
+        from health_import import query_lab_results
 
         df = query_lab_results(DATA_DIR_ABSOLUTE, start, end, test_name=test_name or None)
         if df.empty:

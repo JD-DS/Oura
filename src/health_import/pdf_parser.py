@@ -45,7 +45,7 @@ BIOMARKER_ALIASES = {
 
 def _normalize_name(raw: str) -> str:
     """Map raw test name to canonical biomarker name."""
-    key = raw.lower().strip().replace("-", " ").replace("_", " ")
+    key = raw.lower().strip().replace("_", " ")
     return BIOMARKER_ALIASES.get(key, raw.strip())
 
 
