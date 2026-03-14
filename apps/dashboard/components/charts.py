@@ -1,6 +1,7 @@
 """Reusable Plotly chart builders for the Oura Health Dashboard.
 
 All theme colors, thresholds, and defaults come from config.py.
+Styled for the retro-minimal aesthetic.
 """
 
 from __future__ import annotations
@@ -12,6 +13,10 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from config import (
+    CHART_BG,
+    CHART_COLOR_SEQUENCE,
+    CHART_GRID_COLOR,
+    CHART_PAPER_BG,
     CHART_TEMPLATE,
     COLOR_BAD,
     COLOR_GOOD,
@@ -19,24 +24,55 @@ from config import (
     ROLLING_WINDOW_DAYS,
     SLEEP_STAGE_COLORS,
     SPARKLINE_HEIGHT,
+    THEME_PRIMARY,
+    THEME_SECONDARY,
 )
+
+
+def _get_chart_layout() -> dict:
+    """Return common layout settings for retro-minimal charts."""
+    return {
+        "template": CHART_TEMPLATE,
+        "paper_bgcolor": CHART_PAPER_BG,
+        "plot_bgcolor": CHART_BG,
+        "font": {"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        "title": {"font": {"family": "Space Grotesk, sans-serif", "size": 16, "color": "#e8e8e8"}},
+        "xaxis": {
+            "gridcolor": CHART_GRID_COLOR,
+            "linecolor": "rgba(0, 212, 255, 0.1)",
+            "tickfont": {"size": 11},
+        },
+        "yaxis": {
+            "gridcolor": CHART_GRID_COLOR,
+            "linecolor": "rgba(0, 212, 255, 0.1)",
+            "tickfont": {"size": 11},
+        },
+        "legend": {"font": {"size": 11}},
+        "hoverlabel": {
+            "bgcolor": "#1a1a24",
+            "bordercolor": "rgba(0, 212, 255, 0.3)",
+            "font": {"family": "IBM Plex Sans, sans-serif", "color": "#e8e8e8"},
+        },
+        "margin": {"t": 50, "b": 40, "l": 50, "r": 20},
+    }
 
 
 def score_kpi(label: str, value, delta=None, suffix: str = ""):
     """Render a metric card using st.metric."""
-    display = f"{value}{suffix}" if value is not None else "N/A"
+    display = f"{value}{suffix}" if value is not None else "—"
     st.metric(label=label, value=display, delta=delta)
 
 
 def sparkline(values: list, height: int | None = None) -> go.Figure:
+    """Minimal sparkline chart with neon glow effect."""
     h = height or SPARKLINE_HEIGHT
     fig = go.Figure(
         go.Scatter(
             y=values,
             mode="lines",
-            line=dict(width=2),
+            line=dict(width=2, color=THEME_PRIMARY),
             fill="tozeroy",
-            fillcolor="rgba(108,99,255,0.15)",
+            fillcolor="rgba(0, 212, 255, 0.1)",
         )
     )
     fig.update_layout(
@@ -44,25 +80,29 @@ def sparkline(values: list, height: int | None = None) -> go.Figure:
         height=h,
         xaxis=dict(visible=False),
         yaxis=dict(visible=False),
-        template=CHART_TEMPLATE,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
         showlegend=False,
     )
     return fig
 
 
 def sleep_architecture_chart(df: pd.DataFrame) -> go.Figure:
+    """Stacked bar chart for sleep stages."""
     fig = go.Figure()
     for stage, color in SLEEP_STAGE_COLORS.items():
         label = stage.replace("_h", "").title()
         fig.add_trace(go.Bar(x=df["day"], y=df[stage], name=label, marker_color=color))
-    fig.update_layout(
-        barmode="stack",
-        title="Sleep Architecture",
-        xaxis_title="Date",
-        yaxis_title="Hours",
-        template=CHART_TEMPLATE,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02),
-    )
+    
+    layout = _get_chart_layout()
+    layout.update({
+        "barmode": "stack",
+        "title": {"text": "Sleep Architecture"},
+        "xaxis_title": "Date",
+        "yaxis_title": "Hours",
+        "legend": {"orientation": "h", "yanchor": "bottom", "y": 1.02, "font": {"size": 11}},
+    })
+    fig.update_layout(**layout)
     return fig
 
 
@@ -74,11 +114,24 @@ def trend_line(
     rolling_window: int | None = None,
     y_label: str | None = None,
 ) -> go.Figure:
+    """Line chart with rolling average overlay."""
     window = rolling_window or ROLLING_WINDOW_DAYS
     fig = go.Figure()
+    
+    # Data points
     fig.add_trace(
-        go.Scatter(x=df[x], y=df[y], mode="markers+lines", name=y_label or y, opacity=0.6)
+        go.Scatter(
+            x=df[x],
+            y=df[y],
+            mode="markers+lines",
+            name=y_label or y,
+            line=dict(color=THEME_PRIMARY, width=1),
+            marker=dict(size=5, color=THEME_PRIMARY),
+            opacity=0.7,
+        )
     )
+    
+    # Rolling average
     if len(df) >= window:
         rolling = df[y].rolling(window, min_periods=1).mean()
         fig.add_trace(
@@ -87,12 +140,17 @@ def trend_line(
                 y=rolling,
                 mode="lines",
                 name=f"{window}-day avg",
-                line=dict(width=3),
+                line=dict(width=2, color=THEME_SECONDARY),
             )
         )
-    fig.update_layout(
-        title=title, xaxis_title="Date", yaxis_title=y_label or y, template=CHART_TEMPLATE
-    )
+    
+    layout = _get_chart_layout()
+    layout.update({
+        "title": {"text": title},
+        "xaxis_title": "Date",
+        "yaxis_title": y_label or y,
+    })
+    fig.update_layout(**layout)
     return fig
 
 
@@ -103,13 +161,20 @@ def grouped_bar(
     fig = go.Figure()
     for col, name, color in y_cols:
         fig.add_trace(go.Bar(x=df[x], y=df[col], name=name, marker_color=color))
-    fig.update_layout(barmode="group", title=title, template=CHART_TEMPLATE)
+    
+    layout = _get_chart_layout()
+    layout.update({
+        "barmode": "group",
+        "title": {"text": title},
+    })
+    fig.update_layout(**layout)
     return fig
 
 
 def scatter_with_trend(
     df: pd.DataFrame, x: str, y: str, title: str, x_label: str = "", y_label: str = ""
 ) -> go.Figure:
+    """Scatter plot with OLS trendline."""
     fig = px.scatter(
         df,
         x=x,
@@ -117,29 +182,51 @@ def scatter_with_trend(
         trendline="ols",
         title=title,
         labels={x: x_label or x, y: y_label or y},
-        template=CHART_TEMPLATE,
+        color_discrete_sequence=[THEME_PRIMARY],
     )
+    
+    # Style the trendline
+    if len(fig.data) > 1:
+        fig.data[1].line.color = THEME_SECONDARY
+    
+    layout = _get_chart_layout()
+    layout.update({"title": {"text": title}})
+    fig.update_layout(**layout)
     return fig
 
 
 def correlation_matrix(df: pd.DataFrame, columns: list[str] | None = None) -> go.Figure:
+    """Heatmap for correlation matrix."""
     if columns:
         df = df[columns]
     corr = df.select_dtypes(include="number").corr()
+    
+    # Custom colorscale matching retro theme
+    colorscale = [
+        [0.0, "#ff2d95"],    # Negative: magenta
+        [0.5, "#12121a"],    # Zero: dark
+        [1.0, "#00d4ff"],    # Positive: cyan
+    ]
+    
     fig = px.imshow(
         corr,
         text_auto=".2f",
-        color_continuous_scale="RdBu_r",
+        color_continuous_scale=colorscale,
         zmin=-1,
         zmax=1,
-        title="Correlation Matrix",
-        template=CHART_TEMPLATE,
         aspect="auto",
     )
+    
+    layout = _get_chart_layout()
+    layout.update({
+        "title": {"text": "Correlation Matrix"},
+    })
+    fig.update_layout(**layout)
     return fig
 
 
 def calendar_heatmap(df: pd.DataFrame, date_col: str, value_col: str, title: str) -> go.Figure:
+    """Calendar-style heatmap."""
     if df.empty:
         return go.Figure()
 
@@ -148,22 +235,31 @@ def calendar_heatmap(df: pd.DataFrame, date_col: str, value_col: str, title: str
     df["weekday"] = df[date_col].dt.dayofweek
     df["week"] = df[date_col].dt.isocalendar().week.astype(int)
 
+    # Retro gradient colorscale
+    colorscale = [
+        [0.0, "#ff4757"],
+        [0.5, "#ffb800"],
+        [1.0, "#00d4a0"],
+    ]
+
     fig = px.scatter(
         df,
         x="week",
         y="weekday",
         color=value_col,
         size=[12] * len(df),
-        color_continuous_scale="RdYlGn",
-        title=title,
+        color_continuous_scale=colorscale,
         labels={"weekday": "Day of Week", "week": "Week"},
-        template=CHART_TEMPLATE,
     )
     fig.update_yaxes(
         tickvals=list(range(7)),
         ticktext=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         autorange="reversed",
     )
+    
+    layout = _get_chart_layout()
+    layout.update({"title": {"text": title}})
+    fig.update_layout(**layout)
     return fig
 
 
@@ -175,6 +271,7 @@ def anomaly_timeline(
     threshold: float = 2.0,
     title: str = "",
 ) -> go.Figure:
+    """Timeline with anomaly detection bands."""
     if df.empty or metric_col not in df.columns:
         return go.Figure()
 
@@ -187,8 +284,12 @@ def anomaly_timeline(
     anomalies = z_scores.abs() > threshold
 
     fig = go.Figure()
+    
+    # Confidence band
     fig.add_trace(
-        go.Scatter(x=df[date_col], y=upper, mode="lines", line=dict(width=0), showlegend=False)
+        go.Scatter(
+            x=df[date_col], y=upper, mode="lines", line=dict(width=0), showlegend=False
+        )
     )
     fig.add_trace(
         go.Scatter(
@@ -197,24 +298,36 @@ def anomaly_timeline(
             mode="lines",
             line=dict(width=0),
             fill="tonexty",
-            fillcolor="rgba(108,99,255,0.15)",
-            name=f"{threshold}\u03c3 band",
+            fillcolor="rgba(0, 212, 255, 0.08)",
+            name=f"{threshold}σ band",
         )
     )
+    
+    # Data line
     fig.add_trace(
         go.Scatter(
-            x=df[date_col], y=df[metric_col], mode="lines+markers", name=metric_col, opacity=0.8
+            x=df[date_col],
+            y=df[metric_col],
+            mode="lines+markers",
+            name=metric_col,
+            line=dict(color=THEME_PRIMARY, width=1.5),
+            marker=dict(size=4, color=THEME_PRIMARY),
+            opacity=0.9,
         )
     )
+    
+    # Rolling mean
     fig.add_trace(
         go.Scatter(
             x=df[date_col],
             y=rolling_mean,
             mode="lines",
             name=f"{window}-day mean",
-            line=dict(dash="dash"),
+            line=dict(dash="dash", color="#6b7280", width=1),
         )
     )
+    
+    # Anomaly markers
     if anomalies.any():
         anom_df = df[anomalies]
         fig.add_trace(
@@ -222,22 +335,34 @@ def anomaly_timeline(
                 x=anom_df[date_col],
                 y=anom_df[metric_col],
                 mode="markers",
-                marker=dict(size=12, color="red", symbol="x"),
+                marker=dict(size=10, color=COLOR_BAD, symbol="x"),
                 name="Anomaly",
             )
         )
-    fig.update_layout(title=title or f"{metric_col} Anomaly Detection", template=CHART_TEMPLATE)
+    
+    layout = _get_chart_layout()
+    layout.update({"title": {"text": title or f"{metric_col} Anomaly Detection"}})
+    fig.update_layout(**layout)
     return fig
 
 
 def pie_chart(labels: list, values: list, title: str, colors: dict | None = None) -> go.Figure:
+    """Pie chart with retro colors."""
+    color_map = colors or {label: CHART_COLOR_SEQUENCE[i % len(CHART_COLOR_SEQUENCE)] for i, label in enumerate(labels)}
+    
     fig = px.pie(
         names=labels,
         values=values,
-        title=title,
         color=labels,
-        color_discrete_map=colors or {},
-        template=CHART_TEMPLATE,
+        color_discrete_map=color_map,
+    )
+    
+    layout = _get_chart_layout()
+    layout.update({"title": {"text": title}})
+    fig.update_layout(**layout)
+    fig.update_traces(
+        textfont={"family": "JetBrains Mono, monospace", "size": 12},
+        marker={"line": {"color": CHART_BG, "width": 2}},
     )
     return fig
 
@@ -252,6 +377,13 @@ def contributor_bar(names: list[str], values: list[float], title: str) -> go.Fig
         else COLOR_GOOD
         for v in values
     ]
+    
     fig = go.Figure(go.Bar(x=values, y=names, orientation="h", marker_color=colors))
-    fig.update_layout(title=title, xaxis_title="Average Score", template=CHART_TEMPLATE)
+    
+    layout = _get_chart_layout()
+    layout.update({
+        "title": {"text": title},
+        "xaxis_title": "Average Score",
+    })
+    fig.update_layout(**layout)
     return fig

@@ -4,7 +4,24 @@ from __future__ import annotations
 
 import io
 import re
+import sys
+import types
 from pathlib import Path
+
+try:
+    import pdfplumber  # type: ignore
+except ModuleNotFoundError:
+    # Provide a minimal shim so tests can patch pdfplumber.open even when the
+    # optional dependency is not installed in the local environment.
+    pdfplumber = types.ModuleType("pdfplumber")
+
+    def _missing_pdfplumber_open(*_args, **_kwargs):
+        raise ModuleNotFoundError(
+            "No module named 'pdfplumber'. Install it to parse lab PDFs."
+        )
+
+    pdfplumber.open = _missing_pdfplumber_open  # type: ignore[attr-defined]
+    sys.modules["pdfplumber"] = pdfplumber
 
 
 # Common biomarker name normalizations (various lab naming conventions)
@@ -45,7 +62,7 @@ BIOMARKER_ALIASES = {
 
 def _normalize_name(raw: str) -> str:
     """Map raw test name to canonical biomarker name."""
-    key = raw.lower().strip().replace("-", " ").replace("_", " ")
+    key = raw.lower().strip().replace("_", " ")
     return BIOMARKER_ALIASES.get(key, raw.strip())
 
 
@@ -108,8 +125,6 @@ def _infer_columns(headers: list, rows: list) -> dict[str, int]:
 
 def _extract_from_tables(pdf_bytes: bytes) -> list[dict]:
     """Extract lab results from PDF tables."""
-    import pdfplumber
-
     results = []
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
         for page in pdf.pages:
@@ -150,8 +165,6 @@ def _extract_from_tables(pdf_bytes: bytes) -> list[dict]:
 
 def _extract_date_from_text(pdf_bytes: bytes) -> str | None:
     """Try to find a date in the PDF (e.g. report date, collection date)."""
-    import pdfplumber
-
     date_pattern = re.compile(
         r"(?:date|collected|report|drawn)[:\s]*(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})",
         re.I

@@ -8,58 +8,76 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from config import CHART_TEMPLATE, COLOR_WARNING
+from config import (
+    CHART_BG,
+    CHART_GRID_COLOR,
+    CHART_PAPER_BG,
+    COLOR_WARNING,
+    DATA_DIR_ABSOLUTE,
+    THEME_PRIMARY,
+)
 from components.data import get_lab_results_df
+from styles import (
+    get_custom_css,
+    page_header,
+    section_header,
+    info_card,
+    success_card,
+    warning_card,
+)
 
-st.set_page_config(page_title="Lab Results", page_icon="🧪", layout="wide")
+theme_mode = st.session_state.get("theme_mode", "minimal")
+st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
 
-# Labs use longer default range since draws are infrequent
 labs_start_default = str(date.today() - timedelta(days=365))
 labs_end_default = str(date.today())
 
 start = st.session_state.get("start_date", labs_start_default)
 end = st.session_state.get("end_date", labs_end_default)
 
-st.header("Lab Results")
-st.caption(
-    "Biomarker trends from imported blood panel PDFs. Upload PDFs on the Import Data page."
+st.markdown(
+    page_header("Labs", "Biomarker trends from imported blood panels", theme_mode),
+    unsafe_allow_html=True
 )
 
 try:
-    from config import DATA_DIR_ABSOLUTE
-
     labs = get_lab_results_df(DATA_DIR_ABSOLUTE, start, end)
 except Exception as e:
     st.error(str(e))
     st.stop()
 
 if labs.empty:
-    st.info(
-        "No lab results for this date range. Upload blood panel PDFs on the "
-        "**Import Data** page (Lab Results tab)."
+    st.markdown(
+        info_card("No lab results for this date range. Upload blood panel PDFs on the Import page.", theme_mode),
+        unsafe_allow_html=True
     )
     st.stop()
 
-# Out-of-range summary
+st.markdown(section_header("Out-of-Range Summary", theme_mode), unsafe_allow_html=True)
+
 if "reference_low" in labs.columns and "reference_high" in labs.columns:
     def is_out_of_range(row):
         v = row.get("value")
         lo, hi = row.get("reference_low"), row.get("reference_high")
         if pd.isna(v):
             return False
-        if lo is not None and v < lo:
+        if pd.notna(lo) and v < lo:
             return True
-        if hi is not None and v > hi:
+        if pd.notna(hi) and v > hi:
             return True
         return False
 
     labs["out_of_range"] = labs.apply(is_out_of_range, axis=1)
     out_count = labs["out_of_range"].sum()
+    
     if out_count > 0:
-        st.warning(f"**{int(out_count)}** result(s) outside reference range")
+        st.markdown(
+            warning_card(f"{int(out_count)} result(s) outside reference range", theme_mode),
+            unsafe_allow_html=True
+        )
         out_df = labs[labs["out_of_range"]].copy()
         out_df["status"] = out_df.apply(
-            lambda r: "LOW" if r["reference_low"] is not None and r["value"] < r["reference_low"] else "HIGH",
+            lambda r: "LOW" if pd.notna(r["reference_low"]) and r["value"] < r["reference_low"] else "HIGH",
             axis=1,
         )
         st.dataframe(
@@ -68,17 +86,22 @@ if "reference_low" in labs.columns and "reference_high" in labs.columns:
             hide_index=True,
         )
     else:
-        st.success("All results within reference range")
+        st.markdown(
+            success_card("All results within reference range", theme_mode),
+            unsafe_allow_html=True
+        )
 
-# Biomarker trend charts
+st.markdown(section_header("Biomarker Trends", theme_mode), unsafe_allow_html=True)
+
 test_names = sorted(labs["test_name"].unique().tolist())
 if not test_names:
     st.stop()
 
 selected_tests = st.multiselect(
-    "Select biomarkers to plot",
+    "Select biomarkers",
     test_names,
-    default=test_names[: min(6, len(test_names))],
+    default=test_names[:min(6, len(test_names))],
+    label_visibility="collapsed",
 )
 
 for test in selected_tests:
@@ -93,28 +116,37 @@ for test in selected_tests:
             y=subset["value"],
             mode="lines+markers",
             name=test,
-            line=dict(width=2),
+            line=dict(width=2, color=THEME_PRIMARY),
+            marker=dict(size=6),
         )
     )
 
-    # Reference range bands if available
     row0 = subset.iloc[0]
     lo, hi = row0.get("reference_low"), row0.get("reference_high")
-    if lo is not None and hi is not None:
-        fig.add_hrect(y0=lo, y1=hi, fillcolor="rgba(102, 187, 106, 0.15)", line_width=0)
-        fig.add_hline(y=lo, line_dash="dash", line_color=COLOR_WARNING)
-        fig.add_hline(y=hi, line_dash="dash", line_color=COLOR_WARNING)
+    if pd.notna(lo) and pd.notna(hi):
+        fig.add_hrect(
+            y0=lo, y1=hi,
+            fillcolor="rgba(0, 212, 160, 0.08)",
+            line_width=0,
+        )
+        fig.add_hline(y=lo, line_dash="dash", line_color=COLOR_WARNING, line_width=1)
+        fig.add_hline(y=hi, line_dash="dash", line_color=COLOR_WARNING, line_width=1)
 
     unit = row0.get("unit", "")
     y_title = f"{test} ({unit})" if unit else test
     fig.update_layout(
-        title=f"{test} over time",
-        xaxis_title="Panel date",
+        title={"text": test, "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+        xaxis_title="Date",
         yaxis_title=y_title,
-        template=CHART_TEMPLATE,
+        paper_bgcolor=CHART_PAPER_BG,
+        plot_bgcolor=CHART_BG,
+        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        xaxis={"gridcolor": CHART_GRID_COLOR},
+        yaxis={"gridcolor": CHART_GRID_COLOR},
         hovermode="x unified",
+        margin=dict(t=50, b=40, l=50, r=20),
     )
     st.plotly_chart(fig, use_container_width=True)
 
-st.subheader("All lab results")
-st.dataframe(labs, use_container_width=True, hide_index=True)
+with st.expander("All lab results"):
+    st.dataframe(labs, use_container_width=True, hide_index=True)
