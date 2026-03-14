@@ -234,7 +234,7 @@ def parse_lab_pdf(
                 continue
         if normalized is None:
             errors.append(
-                f"Invalid panel_date '{panel_date}'. Expected YYYY-MM-DD. Using auto-detected date instead."
+                f"Invalid panel_date '{panel_date}'. Expected one of: YYYY-MM-DD, MM/DD/YYYY, DD/MM/YYYY, YYYY/MM/DD, MM-DD-YYYY. Using auto-detected date instead."
             )
         else:
             date_str = normalized

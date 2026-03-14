@@ -171,10 +171,10 @@ st.markdown(section_header("Flagged Nights", theme_mode), unsafe_allow_html=True
 col1, col2 = st.columns(2)
 with col1:
     st.caption("Efficiency below")
-    eff_thresh = st.slider("eff", 50, 100, SLEEP_EFFICIENCY_FLAG, label_visibility="collapsed")
+    eff_thresh = st.slider("Sleep efficiency threshold (%)", 50, 100, SLEEP_EFFICIENCY_FLAG, label_visibility="collapsed")
 with col2:
     st.caption("Latency above (min)")
-    lat_thresh = st.slider("lat", 5, 120, SLEEP_LATENCY_FLAG_MIN, label_visibility="collapsed")
+    lat_thresh = st.slider("Sleep latency threshold (minutes)", 5, 120, SLEEP_LATENCY_FLAG_MIN, label_visibility="collapsed")
 
 flagged = df[
     (df["efficiency"].notna() & (df["efficiency"] < eff_thresh))

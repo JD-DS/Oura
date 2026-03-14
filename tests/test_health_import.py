@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import io
-import sqlite3
 from datetime import datetime
 from unittest.mock import MagicMock, patch
 
