@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 import urllib.parse
 
 import httpx
@@ -80,19 +79,8 @@ def search_pubmed(
                 init = a.find(".//pubmed:Initials", ns) or a.find(".//Initials")
                 if last is not None and last.text:
                     authors.append(f"{last.text} {init.text or ''}".strip())
-        pubdate_el = article.find(".//pubmed:PubDate", ns) or article.find(".//PubDate")
-        year = ""
-        if pubdate_el is not None:
-            year_el = pubdate_el.find("pubmed:Year", ns) or pubdate_el.find("Year")
-            if year_el is not None and year_el.text:
-                year = (year_el.text or "").strip()[:4]
-            else:
-                # Fallback for MedlineDate (e.g. "2024 Spring", "2020")
-                medline_el = pubdate_el.find("pubmed:MedlineDate", ns) or pubdate_el.find("MedlineDate")
-                if medline_el is not None and medline_el.text:
-                    match = re.search(r"\d{4}", medline_el.text)
-                    if match:
-                        year = match.group(0)
+        year_el = article.find(".//pubmed:PubDate", ns) or article.find(".//PubDate")
+        year = (year_el.text or "")[:4] if year_el is not None and year_el.text else ""
         articles.append({"pmid": pmid, "title": title, "authors": authors[:5], "year": year, "abstract": abstract[:500]})
     return articles
 

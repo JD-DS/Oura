@@ -121,6 +121,21 @@ If you use both the CLI and the dashboard, register both redirect URIs in your [
 
 ---
 
+## Data Boundaries: What Stays Local vs. What's in the Repo
+
+This repo is a **framework** — clone it, add your credentials, and your data never touches the codebase.
+
+| Stays local (never committed) | In the repo |
+|--------------------------------|-------------|
+| `.env` — OAuth credentials, API keys, tokens | `.env.example` — template with placeholders |
+| `tokens.json` — OAuth tokens (CLI auth fallback) | Code, config templates, docs |
+| `data/` — Your health data (Excel, PDFs, lab results, workout logs) | `docs/data/` — Redacted sample files for schema docs |
+| `*.sqlite`, `*.db` — Local databases | |
+
+**Clone-and-configure workflow:** Clone → copy `.env.example` to `.env` → add your credentials → run. Your personal data stays in `data/` at the project root (or a path you set via `DATA_DIR` in `.env`).
+
+---
+
 ## How Authentication Works
 
 ### Two Auth Flows

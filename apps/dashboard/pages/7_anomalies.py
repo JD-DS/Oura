@@ -7,20 +7,11 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
-from config import (
-    ANOMALY_WINDOW_DAYS,
-    ANOMALY_Z_THRESHOLD,
-    DATA_DIR_ABSOLUTE,
-    CHART_TEMPLATE,
-    COLOR_WARNING,
-    default_start_date,
-    default_end_date,
-)
+from config import ANOMALY_WINDOW_DAYS, ANOMALY_Z_THRESHOLD, default_start_date, default_end_date
 from components.data import (
     get_all_daily_data_with_imported,
     get_sleep_df,
     get_readiness_df,
-    get_lab_results_df,
 )
 from components.charts import anomaly_timeline
 from styles import (
@@ -39,12 +30,10 @@ sandbox = st.session_state.get("sandbox_mode", False)
 start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
-st.markdown(
-    main_header(
-        "Anomaly Detection",
-        "Identify unusual patterns in your health metrics and get early warning signals"
-    ),
-    unsafe_allow_html=True
+st.header("Anomaly Detection")
+st.caption(
+    "Detect unusual patterns in your health metrics using rolling z-scores. "
+    "Includes Oura and imported data (steps, calories)."
 )
 
 daily = get_all_daily_data_with_imported(token, start, end, sandbox)
@@ -97,21 +86,16 @@ with col2:
         st.plotly_chart(fig, use_container_width=True)
 
 if "steps_imported" in daily.columns and daily["steps_imported"].notna().any():
-    st.markdown(section_header("Activity Anomalies (Imported Data)"), unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("##### Steps")
-        fig = anomaly_timeline(daily, "day", "steps_imported", window, threshold, "")
-        fig.update_layout(height=300, margin=dict(t=10))
-        st.plotly_chart(fig, use_container_width=True)
-    with col2:
-        if "calories_imported" in daily.columns and daily["calories_imported"].notna().any():
-            st.markdown("##### Calories")
-            fig = anomaly_timeline(daily, "day", "calories_imported", window, threshold, "")
-            fig.update_layout(height=300, margin=dict(t=10))
-            st.plotly_chart(fig, use_container_width=True)
+    st.subheader("Steps (imported)")
+    fig = anomaly_timeline(daily, "day", "steps_imported", window, threshold, "Steps (imported) Anomalies")
+    st.plotly_chart(fig, use_container_width=True)
 
-st.markdown(section_header("Illness Early Warning"), unsafe_allow_html=True)
+if "calories_imported" in daily.columns and daily["calories_imported"].notna().any():
+    st.subheader("Calories (imported)")
+    fig = anomaly_timeline(daily, "day", "calories_imported", window, threshold, "Calories (imported) Anomalies")
+    st.plotly_chart(fig, use_container_width=True)
+
+st.subheader("Illness Early Warning")
 st.caption(
     "Flags days where temperature is rising AND HRV is declining simultaneously — "
     "a pattern often associated with illness onset."

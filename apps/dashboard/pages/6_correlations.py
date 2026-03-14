@@ -15,7 +15,7 @@ from config import (
     default_end_date,
     default_start_date,
 )
-from components.data import get_all_daily_data_with_imported, get_lab_results_df
+from components.data import get_all_daily_data_with_imported
 from components.charts import scatter_with_trend, correlation_matrix
 from styles import (
     get_custom_css,
@@ -31,29 +31,10 @@ sandbox = st.session_state.get("sandbox_mode", False)
 start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
-st.markdown(
-    main_header(
-        "Correlations Engine",
-        "Discover relationships between your health metrics, imported data, and biomarkers"
-    ),
-    unsafe_allow_html=True
-)
+st.header("Correlations Engine")
+st.caption("Includes Oura metrics and imported data (steps, calories, workouts) when available.")
 
-with st.expander("⚙️ Data merge settings"):
-    dedup_strategy = st.radio(
-        "How to handle overlapping Oura and imported data (steps, calories):",
-        options=["both", "oura_primary", "imported_primary", "average"],
-        index=0,
-        format_func=lambda x: {
-            "both": "Keep both sources as separate columns",
-            "oura_primary": "Use Oura, fill gaps with imported",
-            "imported_primary": "Use imported, fill gaps with Oura",
-            "average": "Average overlapping values",
-        }[x],
-        horizontal=True,
-    )
-
-daily = get_all_daily_data_with_imported(token, start, end, sandbox, dedup_strategy=dedup_strategy)
+daily = get_all_daily_data_with_imported(token, start, end, sandbox)
 
 if daily.empty:
     st.markdown(

@@ -108,25 +108,13 @@ with st.sidebar:
         else:
             st.session_state["sandbox_mode"] = False
 
-    st.markdown("<hr style='margin: 1.5rem 0; border-color: rgba(255,255,255,0.06);'>", unsafe_allow_html=True)
-    
-    st.markdown("""
-    <p style="
-        font-size: 0.7rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #71717A;
-        margin-bottom: 0.5rem;
-    ">Export</p>
-    """, unsafe_allow_html=True)
-    
+    st.markdown("---")
+    st.markdown("### Export")
     from components.data import get_all_daily_data_with_imported
     token = st.session_state.get("access_token", "")
     sandbox = st.session_state.get("sandbox_mode", False)
     start_str = st.session_state.get("start_date", str(start_default))
     end_str = st.session_state.get("end_date", str(today))
-    
     if token:
         export_df = get_all_daily_data_with_imported(token, start_str, end_str, sandbox)
         if not export_df.empty:
@@ -134,16 +122,14 @@ with st.sidebar:
             st.download_button(
                 "Download CSV",
                 data=csv_bytes,
-                file_name=f"oura_{start_str}_{end_str}.csv",
+                file_name=f"oura_export_{start_str}_{end_str}.csv",
                 mime="text/csv",
                 use_container_width=True,
             )
         else:
             st.caption("No data to export")
-    
-    st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
-    
-    if st.button("Sign out", use_container_width=True, type="secondary"):
+    st.markdown("---")
+    if st.button("Logout", use_container_width=True):
         logout()
         st.rerun()
 
@@ -155,10 +141,10 @@ readiness_page = st.Page("pages/3_readiness.py", title="Readiness", icon="⚡")
 activity_page = st.Page("pages/4_activity.py", title="Activity", icon="🏃")
 hr_stress_page = st.Page("pages/5_heart_rate_stress.py", title="Heart & Stress", icon="❤️")
 correlations_page = st.Page("pages/6_correlations.py", title="Correlations", icon="🔗")
-anomalies_page = st.Page("pages/7_anomalies.py", title="Anomalies", icon="🔍")
-assistant_page = st.Page("pages/8_assistant.py", title="Assistant", icon="🤖")
-import_page = st.Page("pages/9_import.py", title="Import", icon="📥")
-labs_page = st.Page("pages/10_labs.py", title="Labs", icon="🧪")
+anomalies_page = st.Page("pages/7_anomalies.py", title="Anomaly Detection", icon="🔍")
+assistant_page = st.Page("pages/8_assistant.py", title="AI Assistant", icon="🤖")
+import_page = st.Page("pages/9_import.py", title="Import Data", icon="📥")
+labs_page = st.Page("pages/10_labs.py", title="Lab Results", icon="🧪")
 
 nav = st.navigation([
     dashboard_page,

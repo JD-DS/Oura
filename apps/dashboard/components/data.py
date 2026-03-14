@@ -250,72 +250,25 @@ def get_all_daily_data(token: str, start: str, end: str, sandbox: bool = False) 
     return merged
 
 
-def get_all_daily_data_with_imported(
-    token: str,
-    start: str,
-    end: str,
-    sandbox: bool = False,
-    dedup_strategy: str = "both",
-) -> pd.DataFrame:
-    """
-    Merge Oura daily data with imported activity (steps, calories, workouts).
-
-    Args:
-        token: Oura access token
-        start: Start date (YYYY-MM-DD)
-        end: End date (YYYY-MM-DD)
-        sandbox: Use Oura sandbox mode
-        dedup_strategy: How to handle overlapping data:
-            - "both": Keep both sources as separate columns (default)
-            - "oura_primary": Use Oura data, fill gaps with imported
-            - "imported_primary": Use imported data, fill gaps with Oura
-            - "average": Average overlapping values
-
-    Returns:
-        DataFrame with merged daily data
-    """
+def get_all_daily_data_with_imported(token: str, start: str, end: str, sandbox: bool = False) -> pd.DataFrame:
+    """Merge Oura daily data with imported activity (steps, calories, workouts) for Correlations/Anomaly pages."""
     daily = get_all_daily_data(token, start, end, sandbox)
     imported = get_imported_activity_df(DATA_DIR_ABSOLUTE, start, end)
-
-    if imported.empty:
-        return daily
-
-    imp_merge = imported.rename(columns={
-        "steps": "steps_imported",
-        "calories": "calories_imported",
-        "workouts": "workouts_imported",
-        "weight": "weight_imported",
-        "sleep_hours": "sleep_hours_imported",
-    })
-    imp_cols = ["day"] + [c for c in imp_merge.columns if c != "day" and c.endswith("_imported")]
-    imp_merge = imp_merge[[c for c in imp_cols if c in imp_merge.columns]]
-
-    if daily.empty:
-        return imp_merge
-
-    merged = daily.merge(imp_merge, on="day", how="outer").sort_values("day").reset_index(drop=True)
-
-    if dedup_strategy == "both":
-        return merged
-
-    oura_to_imported = {
-        "steps": "steps_imported",
-        "active_cal": "calories_imported",
-        "total_sleep_h": "sleep_hours_imported",
-    }
-
-    for oura_col, imp_col in oura_to_imported.items():
-        if oura_col not in merged.columns or imp_col not in merged.columns:
-            continue
-
-        if dedup_strategy == "oura_primary":
-            merged[f"{oura_col}_combined"] = merged[oura_col].fillna(merged[imp_col])
-        elif dedup_strategy == "imported_primary":
-            merged[f"{oura_col}_combined"] = merged[imp_col].fillna(merged[oura_col])
-        elif dedup_strategy == "average":
-            merged[f"{oura_col}_combined"] = merged[[oura_col, imp_col]].mean(axis=1, skipna=True)
-
-    return merged
+    if not imported.empty:
+        imp_merge = imported.rename(columns={
+            "steps": "steps_imported",
+            "calories": "calories_imported",
+            "workouts": "workouts_imported",
+            "weight": "weight_imported",
+            "sleep_hours": "sleep_hours_imported",
+        })
+        imp_cols = ["day"] + [c for c in imp_merge.columns if c != "day" and c.endswith("_imported")]
+        imp_merge = imp_merge[[c for c in imp_cols if c in imp_merge.columns]]
+        if not daily.empty:
+            daily = daily.merge(imp_merge, on="day", how="outer").sort_values("day").reset_index(drop=True)
+        else:
+            daily = imp_merge
+    return daily
 
 
 @st.cache_data(ttl=60, show_spinner=False)

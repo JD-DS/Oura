@@ -1,8 +1,8 @@
 """External health data import (Excel, CSV, PDF) and persistent storage."""
 
-from .excel_parser import parse_excel
-from .pdf_parser import parse_lab_pdf
-from .storage import (
+from src.health_import.excel_parser import parse_excel
+from src.health_import.pdf_parser import parse_lab_pdf
+from src.health_import.storage import (
     get_activity_store,
     get_lab_store,
     save_activity_rows,
