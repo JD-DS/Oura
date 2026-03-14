@@ -17,13 +17,27 @@ from config import (
 )
 from components.data import get_activity_df, get_imported_activity_df
 from components.charts import trend_line, grouped_bar
+from styles import (
+    get_custom_css,
+    main_header,
+    section_header,
+    info_box,
+)
+
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
 start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
-st.header("Activity")
+st.markdown(
+    main_header(
+        "Activity",
+        "Track your daily movement, calories burned, and activity patterns"
+    ),
+    unsafe_allow_html=True
+)
 
 df = get_activity_df(token, start, end, sandbox)
 imported = get_imported_activity_df(DATA_DIR_ABSOLUTE, start, end)
@@ -55,7 +69,12 @@ if has_imported:
     if cal_imp is not None:
         st.caption(f"📥 Imported calories (latest): {cal_imp:,.0f} kcal")
 
-st.subheader("Daily Steps")
+if has_imported:
+    cal_imp = latest_imp.get("calories")
+    if cal_imp is not None:
+        st.caption(f"📥 Imported calories (latest): {cal_imp:,.0f} kcal")
+
+st.markdown(section_header("Daily Steps"), unsafe_allow_html=True)
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 if has_oura:
     fig.add_trace(go.Bar(x=df["day"], y=df["steps"], name="Steps (Oura)", opacity=0.7, marker_color=THEME_PRIMARY), secondary_y=False)

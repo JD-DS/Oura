@@ -19,6 +19,7 @@ from components.auth_web import (
     logout,
     show_login_page,
 )
+from styles import get_custom_css
 
 st.set_page_config(
     page_title="Oura Health Dashboard",
@@ -27,37 +28,81 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+st.markdown(get_custom_css(), unsafe_allow_html=True)
+
 handle_callback()
 
 if not is_authenticated():
     show_login_page()
     st.stop()
 
-# --- Sidebar controls (shared across all pages) ---
+# --- Sidebar controls ---
 
 with st.sidebar:
-    st.title("Oura Dashboard")
+    st.markdown("""
+    <div style="margin-bottom: 1.5rem;">
+        <span style="
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #FAFAFA;
+            letter-spacing: -0.02em;
+        ">Oura</span>
+        <span style="
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #71717A;
+            letter-spacing: -0.02em;
+        "> Dashboard</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     is_sandbox = st.session_state.get("sandbox_mode", False)
     if is_sandbox:
-        st.info("Sandbox mode -- using demo data")
+        st.markdown("""
+        <div style="
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.8rem;
+            color: #A78BFA;
+        ">
+            Demo mode active
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown("### Date Range")
+    st.markdown("""
+    <p style="
+        font-size: 0.7rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #71717A;
+        margin-bottom: 0.5rem;
+    ">Date range</p>
+    """, unsafe_allow_html=True)
+    
     today = default_end_date()
     start_default = default_start_date()
-    start_date = st.date_input("Start", value=start_default, max_value=today)
-    end_date = st.date_input("End", value=today, max_value=today)
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        start_date = st.date_input("Start", value=start_default, max_value=today, label_visibility="collapsed")
+    with col2:
+        end_date = st.date_input("End", value=today, max_value=today, label_visibility="collapsed")
 
     if start_date > end_date:
-        st.error("Start date must be before end date")
+        st.error("Invalid date range")
         st.stop()
 
     st.session_state["start_date"] = str(start_date)
     st.session_state["end_date"] = str(end_date)
 
+    st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+
     if not is_sandbox:
-        st.markdown("---")
-        sandbox_toggle = st.toggle("Demo mode (sandbox data)", value=False)
+        sandbox_toggle = st.toggle("Use demo data", value=False)
         if sandbox_toggle:
             st.session_state["sandbox_mode"] = True
         else:
@@ -90,11 +135,11 @@ with st.sidebar:
 
 # --- Page navigation ---
 
-dashboard_page = st.Page("pages/1_dashboard.py", title="Dashboard", icon="📊", default=True)
-sleep_page = st.Page("pages/2_sleep.py", title="Sleep Analyzer", icon="🌙")
-readiness_page = st.Page("pages/3_readiness.py", title="Readiness & Recovery", icon="⚡")
+dashboard_page = st.Page("pages/1_dashboard.py", title="Overview", icon="📊", default=True)
+sleep_page = st.Page("pages/2_sleep.py", title="Sleep", icon="🌙")
+readiness_page = st.Page("pages/3_readiness.py", title="Readiness", icon="⚡")
 activity_page = st.Page("pages/4_activity.py", title="Activity", icon="🏃")
-hr_stress_page = st.Page("pages/5_heart_rate_stress.py", title="Heart Rate & Stress", icon="❤️")
+hr_stress_page = st.Page("pages/5_heart_rate_stress.py", title="Heart & Stress", icon="❤️")
 correlations_page = st.Page("pages/6_correlations.py", title="Correlations", icon="🔗")
 anomalies_page = st.Page("pages/7_anomalies.py", title="Anomaly Detection", icon="🔍")
 assistant_page = st.Page("pages/8_assistant.py", title="AI Assistant", icon="🤖")
