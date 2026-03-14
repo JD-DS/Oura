@@ -72,21 +72,9 @@ def save_activity_rows(
     from datetime import datetime
     now = datetime.utcnow().isoformat()
 
-    written = 0
+    rows = []
     for _, row in df.iterrows():
-        conn.execute("""
-            INSERT INTO activity (date, steps, calories, workouts, weight, sleep_hours, notes, source, imported_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT(date) DO UPDATE SET
-                steps = COALESCE(excluded.steps, steps),
-                calories = COALESCE(excluded.calories, calories),
-                workouts = COALESCE(excluded.workouts, workouts),
-                weight = COALESCE(excluded.weight, weight),
-                sleep_hours = COALESCE(excluded.sleep_hours, sleep_hours),
-                notes = COALESCE(excluded.notes, notes),
-                source = excluded.source,
-                imported_at = excluded.imported_at
-        """, (
+        rows.append((
             str(row.get("date", "")),
             row.get("steps") if pd.notna(row.get("steps")) else None,
             row.get("calories") if pd.notna(row.get("calories")) else None,
@@ -97,9 +85,22 @@ def save_activity_rows(
             source,
             now,
         ))
-        written += 1
+
+    conn.executemany("""
+        INSERT INTO activity (date, steps, calories, workouts, weight, sleep_hours, notes, source, imported_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(date) DO UPDATE SET
+            steps = COALESCE(excluded.steps, steps),
+            calories = COALESCE(excluded.calories, calories),
+            workouts = COALESCE(excluded.workouts, workouts),
+            weight = COALESCE(excluded.weight, weight),
+            sleep_hours = COALESCE(excluded.sleep_hours, sleep_hours),
+            notes = COALESCE(excluded.notes, notes),
+            source = excluded.source,
+            imported_at = excluded.imported_at
+    """, rows)
     conn.commit()
-    return written
+    return len(rows)
 
 
 def query_activity(
@@ -140,27 +141,28 @@ def save_lab_results(
     if not results:
         return 0
     now = datetime.utcnow().isoformat()
-    written = 0
-    for r in results:
-        conn.execute(
-            """
-            INSERT INTO lab_results (test_name, value, unit, reference_low, reference_high, panel_date, source_file, imported_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                r.get("test_name", ""),
-                r.get("value"),
-                r.get("unit", ""),
-                r.get("reference_low"),
-                r.get("reference_high"),
-                r.get("panel_date", ""),
-                r.get("source_file", ""),
-                now,
-            ),
+    rows = [
+        (
+            r.get("test_name", ""),
+            r.get("value"),
+            r.get("unit", ""),
+            r.get("reference_low"),
+            r.get("reference_high"),
+            r.get("panel_date", ""),
+            r.get("source_file", ""),
+            now,
         )
-        written += 1
+        for r in results
+    ]
+    conn.executemany(
+        """
+        INSERT INTO lab_results (test_name, value, unit, reference_low, reference_high, panel_date, source_file, imported_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        rows,
+    )
     conn.commit()
-    return written
+    return len(rows)
 
 
 def query_lab_results(

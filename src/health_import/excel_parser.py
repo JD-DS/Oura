@@ -42,7 +42,7 @@ def _parse_date(val) -> str | None:
         return val.strftime("%Y-%m-%d")
     if isinstance(val, (int, float)):
         try:
-            return pd.Timestamp(val).strftime("%Y-%m-%d")
+            return pd.to_datetime(val, unit="D", origin="1899-12-30").strftime("%Y-%m-%d")
         except Exception:
             return None
     s = str(val).strip()
@@ -72,16 +72,22 @@ def parse_excel(
         path = Path(file_or_bytes)
         if not path.exists():
             return pd.DataFrame(), [f"File not found: {path}"]
-        if path.suffix.lower() in (".csv", ".txt"):
-            df = pd.read_csv(path)
-        else:
-            df = pd.read_excel(path, engine="openpyxl")
+        try:
+            if path.suffix.lower() in (".csv", ".txt"):
+                df = pd.read_csv(path)
+            else:
+                df = pd.read_excel(path, engine="openpyxl")
+        except Exception as exc:
+            return pd.DataFrame(), [f"Could not parse file: {exc}"]
     elif isinstance(file_or_bytes, bytes):
         buf = io.BytesIO(file_or_bytes)
-        if filename and filename.lower().endswith(".csv"):
-            df = pd.read_csv(buf)
-        else:
-            df = pd.read_excel(buf, engine="openpyxl")
+        try:
+            if filename and filename.lower().endswith(".csv"):
+                df = pd.read_csv(buf)
+            else:
+                df = pd.read_excel(buf, engine="openpyxl")
+        except Exception as exc:
+            return pd.DataFrame(), [f"Could not parse file: {exc}"]
     else:
         return pd.DataFrame(), ["Unsupported input type"]
 

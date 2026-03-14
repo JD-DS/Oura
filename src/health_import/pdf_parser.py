@@ -208,7 +208,26 @@ def parse_lab_pdf(
     if not results:
         errors.append("No lab results extracted. PDF format may not be supported.")
 
-    date_str = panel_date or _extract_date_from_text(pdf_bytes)
+    date_str: str | None = None
+    if panel_date:
+        # Validate/normalize user-supplied date to ISO YYYY-MM-DD
+        from datetime import datetime
+        normalized = None
+        for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d", "%m-%d-%Y"):
+            try:
+                normalized = datetime.strptime(panel_date.strip(), fmt).strftime("%Y-%m-%d")
+                break
+            except ValueError:
+                continue
+        if normalized is None:
+            errors.append(
+                f"Invalid panel_date '{panel_date}'. Expected YYYY-MM-DD. Using auto-detected date instead."
+            )
+        else:
+            date_str = normalized
+
+    if date_str is None:
+        date_str = _extract_date_from_text(pdf_bytes)
     if not date_str:
         errors.append("Could not determine panel date. You may need to enter it manually.")
 

@@ -56,22 +56,20 @@ latest_imp = imported.iloc[-1] if has_imported else {}
 cols = st.columns(4)
 with cols[0]:
     steps_val = latest.get("steps") if has_oura else latest_imp.get("steps")
-    st.metric("Steps", f"{steps_val:,.0f}" if steps_val is not None else "—")
+    st.metric("Steps", f"{steps_val:,.0f}" if pd.notna(steps_val) else "—")
 with cols[1]:
-    st.metric("Active Cal (Oura)", f"{latest.get('active_cal', 0):,.0f}" if has_oura else "—")
+    active_cal = latest.get("active_cal") if has_oura else None
+    st.metric("Active Cal (Oura)", f"{active_cal:,.0f}" if has_oura and pd.notna(active_cal) else "—")
 with cols[2]:
-    st.metric("Activity Score", latest.get("activity_score") if has_oura else "—")
+    activity_score = latest.get("activity_score") if has_oura else None
+    st.metric("Activity Score", activity_score if has_oura and pd.notna(activity_score) else "—")
 with cols[3]:
-    st.metric("Walk Distance", f"{latest.get('eq_walk_km', 0):.1f} km" if has_oura else "—")
+    eq_walk_km = latest.get("eq_walk_km") if has_oura else None
+    st.metric("Walk Distance", f"{eq_walk_km:.1f} km" if has_oura and pd.notna(eq_walk_km) else "—")
 
 if has_imported:
     cal_imp = latest_imp.get("calories")
-    if cal_imp is not None:
-        st.caption(f"📥 Imported calories (latest): {cal_imp:,.0f} kcal")
-
-if has_imported:
-    cal_imp = latest_imp.get("calories")
-    if cal_imp is not None:
+    if pd.notna(cal_imp):
         st.caption(f"📥 Imported calories (latest): {cal_imp:,.0f} kcal")
 
 st.markdown(section_header("Daily Steps"), unsafe_allow_html=True)
