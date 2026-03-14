@@ -5,7 +5,7 @@ from __future__ import annotations
 import streamlit as st
 
 from config import DATA_DIR_ABSOLUTE
-from src.health_import import (
+from health_import import (
     parse_excel,
     parse_lab_pdf,
     get_activity_store,
@@ -13,6 +13,7 @@ from src.health_import import (
     save_activity_rows,
     save_lab_results,
     query_activity,
+    query_lab_results,
 )
 
 st.set_page_config(page_title="Data Import", page_icon="📥", layout="wide")
@@ -95,7 +96,6 @@ with tab3:
             st.error(str(e))
         st.subheader("Lab results")
         try:
-            from src.health_import import query_lab_results
             labs = query_lab_results(DATA_DIR_ABSOLUTE, start, end)
             if labs.empty:
                 st.info("No lab results for this range.")

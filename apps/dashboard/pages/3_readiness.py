@@ -47,13 +47,13 @@ temp_dev = latest.get("temp_dev")
 
 cols = st.columns(4)
 with cols[0]:
-    st.metric("Readiness", readiness_score if readiness_score else "—")
+    st.metric("Readiness", readiness_score if pd.notna(readiness_score) else "—")
 with cols[1]:
-    st.metric("HRV Balance", hrv_balance if hrv_balance else "—")
+    st.metric("HRV Balance", hrv_balance if pd.notna(hrv_balance) else "—")
 with cols[2]:
-    st.metric("Recovery Index", recovery_index if recovery_index else "—")
+    st.metric("Recovery Index", recovery_index if pd.notna(recovery_index) else "—")
 with cols[3]:
-    st.metric("Temp Deviation", f"{temp_dev:+.2f}°C" if temp_dev else "—")
+    st.metric("Temp Deviation", f"{temp_dev:+.2f}°C" if pd.notna(temp_dev) else "—")
 
 st.markdown(section_header("Readiness Score Trend"), unsafe_allow_html=True)
 fig = trend_line(rd_df, "day", "readiness_score", "Readiness Score", y_label="Score (0-100)")

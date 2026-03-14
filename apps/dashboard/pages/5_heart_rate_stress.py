@@ -43,13 +43,13 @@ resilience = latest_res.get("resilience_level", "N/A")
 
 cols = st.columns(4)
 with cols[0]:
-    st.metric("Lowest HR", f"{lowest_hr:.0f} bpm" if lowest_hr else "—")
+    st.metric("Lowest HR", f"{lowest_hr:.0f} bpm" if pd.notna(lowest_hr) else "—")
 with cols[1]:
-    st.metric("Avg Sleep HR", f"{avg_hr:.0f} bpm" if avg_hr else "—")
+    st.metric("Avg Sleep HR", f"{avg_hr:.0f} bpm" if pd.notna(avg_hr) else "—")
 with cols[2]:
-    st.metric("Today's Stress", stress_summary if stress_summary else "N/A")
+    st.metric("Today's Stress", stress_summary if pd.notna(stress_summary) else "N/A")
 with cols[3]:
-    st.metric("Resilience", resilience.title() if resilience else "N/A")
+    st.metric("Resilience", resilience.title() if pd.notna(resilience) else "N/A")
 
 st.markdown(section_header("Heart Rate Time Series"), unsafe_allow_html=True)
 st.caption("Select a narrower date range for detailed HR data (large ranges may be slow)")
