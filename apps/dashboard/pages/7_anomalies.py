@@ -7,33 +7,45 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
-from config import ANOMALY_WINDOW_DAYS, ANOMALY_Z_THRESHOLD, default_start_date, default_end_date
+from config import (
+    ANOMALY_WINDOW_DAYS,
+    ANOMALY_Z_THRESHOLD,
+    CHART_BG,
+    CHART_GRID_COLOR,
+    CHART_PAPER_BG,
+    COLOR_WARNING,
+    DATA_DIR_ABSOLUTE,
+    THEME_PRIMARY,
+    default_end_date,
+    default_start_date,
+)
 from components.data import (
     get_all_daily_data_with_imported,
-    get_sleep_df,
+    get_lab_results_df,
     get_readiness_df,
+    get_sleep_df,
 )
 from components.charts import anomaly_timeline
 from styles import (
     get_custom_css,
-    main_header,
+    page_header,
     section_header,
-    info_box,
-    success_box,
-    warning_box,
+    info_card,
+    success_card,
+    warning_card,
 )
 
-st.markdown(get_custom_css(), unsafe_allow_html=True)
+theme_mode = st.session_state.get("theme_mode", "minimal")
+st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
 start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
-st.header("Anomaly Detection")
-st.caption(
-    "Detect unusual patterns in your health metrics using rolling z-scores. "
-    "Includes Oura and imported data (steps, calories)."
+st.markdown(
+    page_header("Anomalies", "Detect unusual patterns in your health metrics", theme_mode),
+    unsafe_allow_html=True
 )
 
 daily = get_all_daily_data_with_imported(token, start, end, sandbox)
@@ -42,12 +54,12 @@ readiness_df = get_readiness_df(token, start, end, sandbox)
 
 if daily.empty:
     st.markdown(
-        info_box("No data available. Try expanding the date range or enabling sandbox mode."),
+        info_card("No data available. Try expanding the date range or enabling demo mode.", theme_mode),
         unsafe_allow_html=True
     )
     st.stop()
 
-st.markdown(section_header("Detection Settings"), unsafe_allow_html=True)
+st.markdown(section_header("Detection Settings", theme_mode), unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 with col1:
@@ -55,51 +67,48 @@ with col1:
 with col2:
     threshold = st.slider("Z-score threshold (σ)", 1.0, 3.0, ANOMALY_Z_THRESHOLD, 0.5)
 
-st.markdown(section_header("Vital Signs Monitoring"), unsafe_allow_html=True)
+st.markdown(section_header("Vital Signs", theme_mode), unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 
 with col1:
     if "temp_dev" in readiness_df.columns and readiness_df["temp_dev"].notna().any():
-        st.markdown("##### Temperature Deviation")
+        st.caption("Temperature Deviation")
         fig = anomaly_timeline(readiness_df, "day", "temp_dev", window, threshold, "")
-        fig.update_layout(height=300, margin=dict(t=10))
+        fig.update_layout(height=280, margin=dict(t=10, b=30, l=50, r=20))
         st.plotly_chart(fig, use_container_width=True)
 
     if not sleep_df.empty and "lowest_hr" in sleep_df.columns and sleep_df["lowest_hr"].notna().any():
-        st.markdown("##### Resting Heart Rate")
+        st.caption("Resting Heart Rate")
         fig = anomaly_timeline(sleep_df, "day", "lowest_hr", window, threshold, "")
-        fig.update_layout(height=300, margin=dict(t=10))
+        fig.update_layout(height=280, margin=dict(t=10, b=30, l=50, r=20))
         st.plotly_chart(fig, use_container_width=True)
 
 with col2:
     if not sleep_df.empty and "avg_hrv" in sleep_df.columns and sleep_df["avg_hrv"].notna().any():
-        st.markdown("##### Heart Rate Variability (HRV)")
+        st.caption("Heart Rate Variability")
         fig = anomaly_timeline(sleep_df, "day", "avg_hrv", window, threshold, "")
-        fig.update_layout(height=300, margin=dict(t=10))
+        fig.update_layout(height=280, margin=dict(t=10, b=30, l=50, r=20))
         st.plotly_chart(fig, use_container_width=True)
 
     if "spo2_avg" in daily.columns and daily["spo2_avg"].notna().any():
-        st.markdown("##### Blood Oxygen (SpO2)")
+        st.caption("Blood Oxygen (SpO2)")
         fig = anomaly_timeline(daily, "day", "spo2_avg", window, threshold, "")
-        fig.update_layout(height=300, margin=dict(t=10))
+        fig.update_layout(height=280, margin=dict(t=10, b=30, l=50, r=20))
         st.plotly_chart(fig, use_container_width=True)
 
 if "steps_imported" in daily.columns and daily["steps_imported"].notna().any():
-    st.subheader("Steps (imported)")
-    fig = anomaly_timeline(daily, "day", "steps_imported", window, threshold, "Steps (imported) Anomalies")
+    st.markdown(section_header("Steps (Imported)", theme_mode), unsafe_allow_html=True)
+    fig = anomaly_timeline(daily, "day", "steps_imported", window, threshold, "")
     st.plotly_chart(fig, use_container_width=True)
 
 if "calories_imported" in daily.columns and daily["calories_imported"].notna().any():
-    st.subheader("Calories (imported)")
-    fig = anomaly_timeline(daily, "day", "calories_imported", window, threshold, "Calories (imported) Anomalies")
+    st.markdown(section_header("Calories (Imported)", theme_mode), unsafe_allow_html=True)
+    fig = anomaly_timeline(daily, "day", "calories_imported", window, threshold, "")
     st.plotly_chart(fig, use_container_width=True)
 
-st.subheader("Illness Early Warning")
-st.caption(
-    "Flags days where temperature is rising AND HRV is declining simultaneously — "
-    "a pattern often associated with illness onset."
-)
+st.markdown(section_header("Illness Early Warning", theme_mode), unsafe_allow_html=True)
+st.caption("Flags days where temperature rises AND HRV declines — a pattern often associated with illness onset.")
 
 if (
     not readiness_df.empty
@@ -121,14 +130,14 @@ if (
 
         if len(warning_days) > 0:
             st.markdown(
-                warning_box(f"⚠️ Potential illness signals detected on <strong>{len(warning_days)}</strong> day(s)"),
+                warning_card(f"Potential illness signals on {len(warning_days)} day(s)", theme_mode),
                 unsafe_allow_html=True
             )
             for d in warning_days:
                 st.markdown(f"- **{d}**: temp z={temp_z.loc[d]:.1f}σ, HRV z={hrv_z.loc[d]:.1f}σ")
         else:
             st.markdown(
-                success_box("✓ No illness warning signals detected in this period"),
+                success_card("No illness warning signals detected", theme_mode),
                 unsafe_allow_html=True
             )
     else:
@@ -136,7 +145,7 @@ if (
 else:
     st.caption("Temperature and HRV data needed for illness detection.")
 
-st.markdown(section_header("All Detected Anomalies"), unsafe_allow_html=True)
+st.markdown(section_header("All Detected Anomalies", theme_mode), unsafe_allow_html=True)
 
 anomaly_metrics = []
 imported_cols = [c for c in ["steps_imported", "calories_imported", "workouts_imported"] if c in daily.columns]
@@ -168,15 +177,11 @@ if anomaly_metrics:
     st.dataframe(anom_table, use_container_width=True, hide_index=True)
 else:
     st.markdown(
-        success_box("✓ No anomalies detected with the current settings"),
+        success_card("No anomalies detected with the current settings", theme_mode),
         unsafe_allow_html=True
     )
 
-st.markdown(section_header("Lab Biomarker Trends"), unsafe_allow_html=True)
-st.caption(
-    "Track biomarker changes over time. Flags results that deviate significantly "
-    "from your historical baseline or show concerning trends."
-)
+st.markdown(section_header("Lab Biomarker Trends", theme_mode), unsafe_allow_html=True)
 
 labs_start = str(date.today() - timedelta(days=730))
 labs_end = str(date.today())
@@ -184,22 +189,23 @@ labs = get_lab_results_df(DATA_DIR_ABSOLUTE, labs_start, labs_end)
 
 if labs.empty:
     st.markdown(
-        info_box("No lab results imported. Upload blood panel PDFs on the <strong>Import Data</strong> page."),
+        info_card("No lab results imported. Upload blood panel PDFs on the Import page.", theme_mode),
         unsafe_allow_html=True
     )
 else:
     test_names = sorted(labs["test_name"].unique().tolist())
     if not test_names:
         st.markdown(
-            info_box("No biomarkers found."),
+            info_card("No biomarkers found.", theme_mode),
             unsafe_allow_html=True
         )
     else:
         selected_labs = st.multiselect(
-            "Select biomarkers to analyze",
+            "Select biomarkers",
             test_names,
             default=test_names[:min(6, len(test_names))],
             key="anomaly_labs",
+            label_visibility="collapsed",
         )
 
         lab_anomalies = []
@@ -244,9 +250,9 @@ else:
 
             trend_direction = "stable"
             if pct_change > 10:
-                trend_direction = "rising ↑"
+                trend_direction = "rising"
             elif pct_change < -10:
-                trend_direction = "declining ↓"
+                trend_direction = "declining"
 
             if status != "normal" or trend_direction != "stable":
                 lab_anomalies.append({
@@ -265,14 +271,14 @@ else:
                 y=subset["value"],
                 mode="lines+markers",
                 name=test,
-                line=dict(width=2, color="#6C63FF"),
-                marker=dict(size=8),
+                line=dict(width=2, color=THEME_PRIMARY),
+                marker=dict(size=6),
             ))
 
             if ref_low is not None and ref_high is not None:
                 fig.add_hrect(
                     y0=ref_low, y1=ref_high,
-                    fillcolor="rgba(102, 187, 106, 0.1)",
+                    fillcolor="rgba(0, 212, 160, 0.08)",
                     line_width=0
                 )
                 fig.add_hline(y=ref_low, line_dash="dash", line_color=COLOR_WARNING, line_width=1)
@@ -280,7 +286,7 @@ else:
 
             if mean_val and std_val:
                 fig.add_hline(
-                    y=mean_val, line_dash="dot", line_color="gray",
+                    y=mean_val, line_dash="dot", line_color="#4b5563",
                     annotation_text="baseline", annotation_position="right"
                 )
 
@@ -288,24 +294,28 @@ else:
             y_title = f"{test} ({unit})" if unit else test
             trend_label = f" ({trend_direction})" if trend_direction != "stable" else ""
             fig.update_layout(
-                title=dict(text=f"{test}{trend_label}", font=dict(size=14)),
+                title={"text": f"{test}{trend_label}", "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
                 xaxis_title="Date",
                 yaxis_title=y_title,
-                template=CHART_TEMPLATE,
+                paper_bgcolor=CHART_PAPER_BG,
+                plot_bgcolor=CHART_BG,
+                font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+                xaxis={"gridcolor": CHART_GRID_COLOR},
+                yaxis={"gridcolor": CHART_GRID_COLOR},
                 hovermode="x unified",
-                margin=dict(t=40),
+                margin=dict(t=50, b=40, l=50, r=20),
             )
             st.plotly_chart(fig, use_container_width=True)
 
         if lab_anomalies:
             st.markdown(
-                warning_box(f"⚠️ <strong>{len(lab_anomalies)}</strong> biomarker(s) flagged"),
+                warning_card(f"{len(lab_anomalies)} biomarker(s) flagged", theme_mode),
                 unsafe_allow_html=True
             )
             anom_df = pd.DataFrame(lab_anomalies)
             st.dataframe(anom_df, use_container_width=True, hide_index=True)
         elif selected_labs:
             st.markdown(
-                success_box("✓ All selected biomarkers within normal range and stable"),
+                success_card("All selected biomarkers within normal range", theme_mode),
                 unsafe_allow_html=True
             )

@@ -8,6 +8,9 @@ staged = subprocess.run(
     capture_output=True,
     text=True,
 )
+if staged.returncode != 0:
+    print(f"ERROR: Could not enumerate staged files (git error): {staged.stderr.strip()}")
+    sys.exit(1)
 files = [f for f in staged.stdout.strip().split("\n") if f]
 blocked = [".env", "tokens.json"]
 for f in files:

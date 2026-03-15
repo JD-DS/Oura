@@ -19,7 +19,13 @@ from components.auth_web import (
     logout,
     show_login_page,
 )
-from styles import get_custom_css
+from styles import (
+    get_custom_css,
+    sidebar_title,
+    sidebar_label,
+    mode_indicator,
+    theme_toggle_html,
+)
 
 st.set_page_config(
     page_title="Oura Health Dashboard",
@@ -28,7 +34,14 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-st.markdown(get_custom_css(), unsafe_allow_html=True)
+# Initialize theme mode in session state
+if "theme_mode" not in st.session_state:
+    st.session_state["theme_mode"] = "minimal"
+
+theme_mode = st.session_state.get("theme_mode", "minimal")
+
+# Inject custom CSS based on theme mode
+st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
 
 handle_callback()
 
@@ -39,49 +52,31 @@ if not is_authenticated():
 # --- Sidebar controls ---
 
 with st.sidebar:
-    st.markdown("""
-    <div style="margin-bottom: 1.5rem;">
-        <span style="
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #FAFAFA;
-            letter-spacing: -0.02em;
-        ">Oura</span>
-        <span style="
-            font-size: 1.25rem;
-            font-weight: 400;
-            color: #71717A;
-            letter-spacing: -0.02em;
-        "> Dashboard</span>
-    </div>
-    """, unsafe_allow_html=True)
-
+    # Logo/Title
+    st.markdown(sidebar_title(theme_mode), unsafe_allow_html=True)
+    
+    # Demo mode indicator
     is_sandbox = st.session_state.get("sandbox_mode", False)
-    if is_sandbox:
-        st.markdown("""
-        <div style="
-            background: rgba(139, 92, 246, 0.1);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            border-radius: 8px;
-            padding: 0.5rem 0.75rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.8rem;
-            color: #A78BFA;
-        ">
-            Demo mode active
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("""
-    <p style="
-        font-size: 0.7rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #71717A;
-        margin-bottom: 0.5rem;
-    ">Date range</p>
-    """, unsafe_allow_html=True)
+    st.markdown(mode_indicator(is_sandbox, theme_mode), unsafe_allow_html=True)
+    
+    # Theme toggle
+    st.markdown(theme_toggle_html(), unsafe_allow_html=True)
+    theme_options = {"Minimal": "minimal", "Retro": "retro"}
+    selected_theme = st.radio(
+        "Theme mode",
+        options=list(theme_options.keys()),
+        index=0 if theme_mode == "minimal" else 1,
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+    if theme_options[selected_theme] != theme_mode:
+        st.session_state["theme_mode"] = theme_options[selected_theme]
+        st.rerun()
+    
+    st.markdown("<div style='height: 0.75rem;'></div>", unsafe_allow_html=True)
+    
+    # Date range
+    st.markdown(sidebar_label("Date Range"), unsafe_allow_html=True)
     
     today = default_end_date()
     start_default = default_start_date()
@@ -99,22 +94,27 @@ with st.sidebar:
     st.session_state["start_date"] = str(start_date)
     st.session_state["end_date"] = str(end_date)
 
-    st.markdown("<div style='height: 1rem;'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height: 0.75rem;'></div>", unsafe_allow_html=True)
 
+    # Demo mode toggle (only show if not already in sandbox)
     if not is_sandbox:
-        sandbox_toggle = st.toggle("Use demo data", value=False)
+        sandbox_toggle = st.toggle("Demo data", value=False)
         if sandbox_toggle:
             st.session_state["sandbox_mode"] = True
         else:
             st.session_state["sandbox_mode"] = False
 
-    st.markdown("---")
-    st.markdown("### Export")
+    st.markdown("<hr style='margin: 1.25rem 0; border-color: rgba(0, 212, 255, 0.08);'>", unsafe_allow_html=True)
+    
+    # Export section
+    st.markdown(sidebar_label("Export"), unsafe_allow_html=True)
+    
     from components.data import get_all_daily_data_with_imported
     token = st.session_state.get("access_token", "")
     sandbox = st.session_state.get("sandbox_mode", False)
     start_str = st.session_state.get("start_date", str(start_default))
     end_str = st.session_state.get("end_date", str(today))
+    
     if token:
         export_df = get_all_daily_data_with_imported(token, start_str, end_str, sandbox)
         if not export_df.empty:
@@ -122,14 +122,17 @@ with st.sidebar:
             st.download_button(
                 "Download CSV",
                 data=csv_bytes,
-                file_name=f"oura_export_{start_str}_{end_str}.csv",
+                file_name=f"oura_{start_str}_{end_str}.csv",
                 mime="text/csv",
                 use_container_width=True,
             )
         else:
             st.caption("No data to export")
-    st.markdown("---")
-    if st.button("Logout", use_container_width=True):
+    
+    st.markdown("<hr style='margin: 1.25rem 0; border-color: rgba(0, 212, 255, 0.08);'>", unsafe_allow_html=True)
+    
+    # Logout
+    if st.button("Sign out", use_container_width=True):
         logout()
         st.rerun()
 
@@ -141,10 +144,10 @@ readiness_page = st.Page("pages/3_readiness.py", title="Readiness", icon="⚡")
 activity_page = st.Page("pages/4_activity.py", title="Activity", icon="🏃")
 hr_stress_page = st.Page("pages/5_heart_rate_stress.py", title="Heart & Stress", icon="❤️")
 correlations_page = st.Page("pages/6_correlations.py", title="Correlations", icon="🔗")
-anomalies_page = st.Page("pages/7_anomalies.py", title="Anomaly Detection", icon="🔍")
-assistant_page = st.Page("pages/8_assistant.py", title="AI Assistant", icon="🤖")
-import_page = st.Page("pages/9_import.py", title="Import Data", icon="📥")
-labs_page = st.Page("pages/10_labs.py", title="Lab Results", icon="🧪")
+anomalies_page = st.Page("pages/7_anomalies.py", title="Anomalies", icon="🔍")
+assistant_page = st.Page("pages/8_assistant.py", title="Assistant", icon="🤖")
+import_page = st.Page("pages/9_import.py", title="Import", icon="📥")
+labs_page = st.Page("pages/10_labs.py", title="Labs", icon="🧪")
 
 nav = st.navigation([
     dashboard_page,

@@ -182,7 +182,7 @@ def get_heart_rate_df(
 def get_imported_activity_df(data_dir: str, start: str, end: str) -> pd.DataFrame:
     """Fetch imported activity (steps, calories, workouts) from local store."""
     try:
-        from src.health_import import query_activity
+        from health_import import query_activity
         df = query_activity(data_dir, start, end)
         if not df.empty and "date" in df.columns:
             df = df.rename(columns={"date": "day"})
@@ -275,7 +275,7 @@ def get_all_daily_data_with_imported(token: str, start: str, end: str, sandbox: 
 def get_lab_results_df(data_dir: str, start: str, end: str) -> pd.DataFrame:
     """Fetch lab results for a date range."""
     try:
-        from src.health_import import query_lab_results
+        from health_import import query_lab_results
         return query_lab_results(data_dir, start, end)
     except Exception:
         return pd.DataFrame()

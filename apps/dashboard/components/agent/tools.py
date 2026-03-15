@@ -8,12 +8,12 @@ import pandas as pd
 from config import DATA_DIR_ABSOLUTE
 from components.data import (
     get_all_daily_data,
+    get_all_daily_data_with_imported,
     get_sleep_df,
     get_activity_df,
     get_readiness_df,
     get_stress_df,
     get_spo2_df,
-    get_imported_activity_df,
 )
 from components.agent.pubmed import search_pubmed
 
@@ -154,7 +154,10 @@ def _run_oura_data(args: dict, token: str, sandbox: bool) -> str:
 
     try:
         if data_type == "all":
-            df = get_all_daily_data(token, start, end, sandbox)
+            if include_imported:
+                df = get_all_daily_data_with_imported(token, start, end, sandbox)
+            else:
+                df = get_all_daily_data(token, start, end, sandbox)
         elif data_type == "sleep":
             df = get_sleep_df(token, start, end, sandbox)
         elif data_type == "activity":
@@ -166,28 +169,10 @@ def _run_oura_data(args: dict, token: str, sandbox: bool) -> str:
         elif data_type == "spo2":
             df = get_spo2_df(token, start, end, sandbox)
         else:
-            df = get_all_daily_data(token, start, end, sandbox)
-
-        if df.empty and not include_imported:
-            return f"No {data_type} data for {start} to {end}."
-
-        if include_imported:
-            imported = get_imported_activity_df(DATA_DIR_ABSOLUTE, start, end)
-            if not imported.empty:
-                # Rename imported cols to avoid collision with Oura columns
-                imp_merge = imported.copy()
-                imp_merge = imp_merge.rename(columns={
-                    "steps": "steps_imported",
-                    "calories": "calories_imported",
-                    "workouts": "workouts_imported",
-                    "weight": "weight_imported",
-                    "sleep_hours": "sleep_hours_imported",
-                })
-                imp_merge = imp_merge[["day"] + [c for c in imp_merge.columns if c != "day" and c.endswith("_imported")]]
-                if not df.empty:
-                    df = df.merge(imp_merge, on="day", how="outer").sort_values("day").reset_index(drop=True)
-                else:
-                    df = imp_merge
+            if include_imported:
+                df = get_all_daily_data_with_imported(token, start, end, sandbox)
+            else:
+                df = get_all_daily_data(token, start, end, sandbox)
 
         if df.empty:
             return f"No {data_type} data for {start} to {end}."
@@ -246,18 +231,7 @@ def _run_statistical_analysis(args: dict, token: str, sandbox: bool) -> str:
         return "Error: start_date and end_date required."
 
     try:
-        df = get_all_daily_data(token, start, end, sandbox)
-        # Merge imported data when analysing imported metrics or for broader correlation
-        imported = get_imported_activity_df(DATA_DIR_ABSOLUTE, start, end)
-        if not imported.empty:
-            imp_merge = imported.rename(columns={
-                "steps": "steps_imported", "calories": "calories_imported",
-                "workouts": "workouts_imported", "weight": "weight_imported",
-                "sleep_hours": "sleep_hours_imported",
-            })
-            imp_merge = imp_merge[["day"] + [c for c in imp_merge.columns if c != "day" and c.endswith("_imported")]]
-            df = df.merge(imp_merge, on="day", how="outer") if not df.empty else imp_merge
-            df = df.sort_values("day").reset_index(drop=True)
+        df = get_all_daily_data_with_imported(token, start, end, sandbox)
         if df.empty:
             return f"No data for {start} to {end}."
 
@@ -301,17 +275,7 @@ def _run_generate_chart(args: dict, token: str, sandbox: bool, charts_out: list)
         return "Error: start_date, end_date, and metric required."
 
     try:
-        df = get_all_daily_data(token, start, end, sandbox)
-        imported = get_imported_activity_df(DATA_DIR_ABSOLUTE, start, end)
-        if not imported.empty:
-            imp_merge = imported.rename(columns={
-                "steps": "steps_imported", "calories": "calories_imported",
-                "workouts": "workouts_imported", "weight": "weight_imported",
-                "sleep_hours": "sleep_hours_imported",
-            })
-            imp_merge = imp_merge[["day"] + [c for c in imp_merge.columns if c != "day" and c.endswith("_imported")]]
-            df = df.merge(imp_merge, on="day", how="outer") if not df.empty else imp_merge
-            df = df.sort_values("day").reset_index(drop=True)
+        df = get_all_daily_data_with_imported(token, start, end, sandbox)
         if df.empty:
             return f"No data for {start} to {end}."
 
