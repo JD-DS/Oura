@@ -71,10 +71,14 @@ def get_custom_css() -> str:
     span:not(.material-symbols-rounded):not(.material-symbols-outlined):not(.material-icons) {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
-    .material-symbols-rounded,
-    .material-symbols-outlined,
+    .material-symbols-rounded {
+        font-family: 'Material Symbols Rounded' !important;
+    }
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined' !important;
+    }
     .material-icons {
-        font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', 'Material Icons' !important;
+        font-family: 'Material Icons' !important;
     }
     h1, h2, h3, h4, h5, h6 {
         font-weight: 600 !important;
