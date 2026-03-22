@@ -50,6 +50,11 @@ def get_custom_css() -> str:
     }
     header[data-testid="stHeader"] {
         background: transparent !important;
+        pointer-events: none !important;
+    }
+    header[data-testid="stHeader"] [data-testid="collapsedControl"],
+    header[data-testid="stHeader"] [data-testid="collapsedControl"] * {
+        pointer-events: auto !important;
     }
 
     /* --- Main content area --- */
@@ -152,7 +157,8 @@ def get_custom_css() -> str:
         position: fixed !important;
         top: 10px !important;
         left: 10px !important;
-        z-index: 999990 !important;
+        z-index: 1000001 !important;
+        pointer-events: auto !important;
     }
     [data-testid="collapsedControl"] button {
         color: transparent !important;
@@ -169,6 +175,7 @@ def get_custom_css() -> str:
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        pointer-events: auto !important;
         backdrop-filter: blur(12px) !important;
         -webkit-backdrop-filter: blur(12px) !important;
         box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) !important;

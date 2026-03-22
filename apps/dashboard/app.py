@@ -141,7 +141,7 @@ _SIDEBAR_TOGGLE_JS = """
     btn.innerHTML = '&#9776;';
     btn.title = 'Toggle sidebar';
     btn.style.cssText = [
-        'position:fixed', 'top:14px', 'left:14px', 'z-index:999989',
+        'position:fixed', 'top:14px', 'left:14px', 'z-index:1000002',
         'width:42px', 'height:42px',
         'background:rgba(12,12,15,0.95)',
         'border:1px solid rgba(255,255,255,0.12)',
@@ -151,7 +151,7 @@ _SIDEBAR_TOGGLE_JS = """
         'box-shadow:0 4px 16px rgba(0,0,0,0.6)',
         'display:flex', 'align-items:center', 'justify-content:center',
         'transition:all .15s ease', 'padding:0', 'line-height:1',
-        'font-family:system-ui,sans-serif'
+        'font-family:system-ui,sans-serif', 'pointer-events:auto'
     ].join(';');
 
     btn.onmouseover = function() {
