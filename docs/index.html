@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Oura Health — Personal Health Analytics</title>
+
+    <!-- Open Graph (Facebook, iMessage, Slack, LinkedIn) -->
+    <meta property="og:title" content="Oura Health Dashboard">
+    <meta property="og:description" content="Sleep, readiness, activity, heart rate, and stress analytics — powered by your Oura Ring data.">
+    <meta property="og:image" content="https://jd-ds.github.io/Oura/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://jd-ds.github.io/Oura/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Oura Health Dashboard">
+    <meta name="twitter:description" content="Sleep, readiness, activity, heart rate, and stress analytics — powered by your Oura Ring data.">
+    <meta name="twitter:image" content="https://jd-ds.github.io/Oura/og-image.png">
+
+    <meta http-equiv="refresh" content="2;url=https://oura-metrics.streamlit.app">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #09090b;
+            color: #f4f4f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 2rem;
+        }
+        .wrap { max-width: 420px; }
+        .bar {
+            position: fixed; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, #2dd4bf, #06b6d4, #a78bfa);
+        }
+        h1 {
+            font-size: 1.6rem; font-weight: 700; letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+        }
+        p { color: #71717a; font-size: 0.9rem; line-height: 1.5; margin-bottom: 1.5rem; }
+        a {
+            display: inline-block;
+            background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+            color: #09090b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: box-shadow 0.2s;
+        }
+        a:hover { box-shadow: 0 4px 20px rgba(45, 212, 191, 0.3); }
+        .sub { color: #3f3f46; font-size: 0.72rem; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="bar"></div>
+    <div class="wrap">
+        <h1>Oura Health</h1>
+        <p>Personal health analytics dashboard — sleep, readiness, activity, heart rate, and stress insights.</p>
+        <a href="https://oura-metrics.streamlit.app">Open Dashboard</a>
+        <p class="sub">Redirecting automatically&hellip;</p>
+    </div>
+</body>
+</html>
