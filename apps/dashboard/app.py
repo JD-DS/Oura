@@ -26,7 +26,15 @@ from styles import (
     mode_indicator,
 )
 
-DEMO_MODE = os.getenv("DEMO_MODE", "").lower() in ("true", "1", "yes")
+def _check_demo_mode() -> bool:
+    if os.getenv("DEMO_MODE", "").lower() in ("true", "1", "yes"):
+        return True
+    try:
+        return str(st.secrets.get("DEMO_MODE", "")).lower() in ("true", "1", "yes")
+    except Exception:
+        return False
+
+DEMO_MODE = _check_demo_mode()
 
 st.set_page_config(
     page_title="Oura Health Dashboard",
