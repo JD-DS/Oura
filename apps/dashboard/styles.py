@@ -8,6 +8,7 @@ def get_custom_css() -> str:
     return """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
     /* ================================================================
        AGGRESSIVE OVERRIDES — these must beat Streamlit's defaults
@@ -50,9 +51,6 @@ def get_custom_css() -> str:
     }
     header[data-testid="stHeader"] {
         background: transparent !important;
-        height: 0 !important;
-        min-height: 0 !important;
-        padding: 0 !important;
     }
 
     /* --- Main content area --- */
@@ -115,33 +113,25 @@ def get_custom_css() -> str:
         border-left-color: #2dd4bf !important;
     }
 
-    /* Fix sidebar collapse/expand button — hide broken Material Icon text */
-    [data-testid="stSidebarCollapseButton"] button {
-        overflow: hidden !important;
-        text-indent: -9999px !important;
-        width: 28px !important;
-        height: 28px !important;
+    /* Sidebar collapse/expand button */
+    [data-testid="stSidebarCollapseButton"] button,
+    [data-testid="collapsedControl"] button {
+        font-family: 'Material Symbols Rounded' !important;
+        font-size: 20px !important;
+        color: #a1a1aa !important;
+        background: rgba(255,255,255,0.04) !important;
+        border: 1px solid rgba(255,255,255,0.06) !important;
+        border-radius: 6px !important;
+        width: 32px !important;
+        height: 32px !important;
         min-height: 0 !important;
         padding: 0 !important;
-        border-radius: 6px !important;
-        background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.08) !important;
         cursor: pointer !important;
-        position: relative !important;
     }
-    [data-testid="stSidebarCollapseButton"] button::after {
-        content: '\2039' !important;
-        text-indent: 0 !important;
-        font-size: 18px !important;
-        color: #a1a1aa !important;
-        position: absolute !important;
-        top: 0; left: 0; right: 0; bottom: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    [data-testid="stSidebarCollapseButton"] button:hover {
-        background: rgba(255,255,255,0.1) !important;
+    [data-testid="stSidebarCollapseButton"] button:hover,
+    [data-testid="collapsedControl"] button:hover {
+        background: rgba(255,255,255,0.08) !important;
+        color: #f4f4f5 !important;
     }
 
     /* ================================================================

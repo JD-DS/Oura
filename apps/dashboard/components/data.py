@@ -113,7 +113,13 @@ def get_readiness_df(_token: str, start: str, end: str, sandbox: bool = False) -
             "prev_day_activity": r.contributors.previous_day_activity,
             "sleep_regularity": r.contributors.sleep_regularity,
         })
-    return pd.DataFrame(rows).sort_values("day").reset_index(drop=True)
+    df = pd.DataFrame(rows).sort_values("day").reset_index(drop=True)
+    if sandbox and "readiness_score" in df.columns and len(df) > 0:
+        spread = [92, 58, 85, 71, 96, 63, 79, 88, 54, 73, 91, 67, 82, 76, 94,
+                  60, 87, 69, 83, 55, 90, 74, 78, 65, 93, 68, 81, 72, 86, 61]
+        for i in range(len(df)):
+            df.loc[i, "readiness_score"] = spread[i % len(spread)]
+    return df
 
 
 @st.cache_data(ttl=CACHE_TTL_SECONDS, show_spinner="Fetching stress data...")

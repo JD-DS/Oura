@@ -15,7 +15,7 @@ start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
 st.markdown(
-    page_header("Overview", "Your health at a glance"),
+    page_header("Overview"),
     unsafe_allow_html=True
 )
 
