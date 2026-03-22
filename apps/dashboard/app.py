@@ -135,7 +135,6 @@ _SIDEBAR_TOGGLE_JS = """
 (function() {
     var doc = window.parent.document;
 
-    // Always recreate to get a fresh handler (old iframe context dies on rerun)
     var old = doc.getElementById('sidebar-toggle-btn');
     if (old) old.remove();
 
@@ -143,8 +142,6 @@ _SIDEBAR_TOGGLE_JS = """
     btn.id = 'sidebar-toggle-btn';
     btn.title = 'Toggle sidebar';
     btn.setAttribute('aria-label', 'Toggle sidebar');
-
-    // Use a simple SVG hamburger icon (no font dependency)
     btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/></svg>';
 
     btn.style.cssText = [
@@ -176,7 +173,8 @@ _SIDEBAR_TOGGLE_JS = """
 
     function isExpanded() {
         var sb = getSidebar();
-        return sb && sb.getAttribute('aria-expanded') !== 'false';
+        if (!sb) return false;
+        return sb.getAttribute('aria-expanded') !== 'false';
     }
 
     function updateVisibility() {
@@ -184,10 +182,10 @@ _SIDEBAR_TOGGLE_JS = """
     }
 
     btn.onclick = function() {
-        // Click the native expand button (works even if visually hidden)
         var targets = [
             '[data-testid="stExpandSidebarButton"]',
-            '[data-testid="collapsedControl"] button'
+            '[data-testid="collapsedControl"] button',
+            'button[kind="header"]'
         ];
         for (var i = 0; i < targets.length; i++) {
             var el = doc.querySelector(targets[i]);
@@ -197,14 +195,33 @@ _SIDEBAR_TOGGLE_JS = """
     };
 
     doc.body.appendChild(btn);
-    updateVisibility();
 
-    // Watch sidebar state changes
-    var observer = new MutationObserver(function() { updateVisibility(); });
-    var sb = getSidebar();
-    if (sb) observer.observe(sb, {attributes: true, attributeFilter: ['aria-expanded']});
-    // Also observe body for late sidebar mount
-    observer.observe(doc.body, {childList: true, subtree: true});
+    // Observe all attribute changes on the entire document to catch sidebar state
+    var observer = new MutationObserver(function(mutations) {
+        for (var i = 0; i < mutations.length; i++) {
+            var m = mutations[i];
+            if (m.type === 'attributes' && m.attributeName === 'aria-expanded') {
+                updateVisibility();
+                return;
+            }
+            if (m.type === 'childList') {
+                updateVisibility();
+                return;
+            }
+        }
+    });
+    observer.observe(doc.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['aria-expanded']
+    });
+
+    // Initial check with retry for late DOM mount
+    updateVisibility();
+    setTimeout(updateVisibility, 500);
+    setTimeout(updateVisibility, 1500);
+    setTimeout(updateVisibility, 3000);
 })();
 </script>
 """

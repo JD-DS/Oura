@@ -7,7 +7,7 @@ def get_custom_css() -> str:
     """Return the dashboard CSS."""
     return """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Rounded&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
     /* ================================================================
        AGGRESSIVE OVERRIDES — these must beat Streamlit's defaults
@@ -72,9 +72,47 @@ def get_custom_css() -> str:
         display: none !important;
     }
 
-    /* Ensure Streamlit icon fonts always render as glyphs */
-    [data-testid="stIconMaterial"] {
-        font-family: 'Material Symbols Rounded' !important;
+    /* Hide broken Material icon text, replace with system Unicode glyphs */
+    [data-testid="stIconMaterial"],
+    .material-symbols-rounded,
+    .material-symbols-outlined {
+        font-size: 0 !important;
+        color: transparent !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 20px !important;
+        height: 20px !important;
+        position: relative !important;
+    }
+    [data-testid="stIconMaterial"]::after,
+    .material-symbols-rounded::after,
+    .material-symbols-outlined::after {
+        font-family: 'Inter', system-ui, sans-serif !important;
+        font-size: 14px !important;
+        color: #a1a1aa !important;
+        position: absolute !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Expander arrow */
+    [data-testid="stExpander"] summary [data-testid="stIconMaterial"]::after {
+        content: '\\25B8' !important;
+    }
+    [data-testid="stExpander"][open] summary [data-testid="stIconMaterial"]::after {
+        content: '\\25BE' !important;
+    }
+    /* Sidebar collapse button icon */
+    [data-testid="stSidebarCollapseButton"] [data-testid="stIconMaterial"]::after {
+        content: '\\2039' !important;
+        font-size: 18px !important;
+    }
+    /* Sidebar expand button icon */
+    [data-testid="stExpandSidebarButton"] [data-testid="stIconMaterial"]::after {
+        content: '\\203A' !important;
+        font-size: 18px !important;
     }
 
     /* --- Main content area --- */
