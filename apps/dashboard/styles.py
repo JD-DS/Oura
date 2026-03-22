@@ -115,13 +115,10 @@ def get_custom_css() -> str:
         border-left-color: #2dd4bf !important;
     }
 
-    /* Hide the sidebar collapse arrow styling */
-    [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {
-        opacity: 0.3;
-        transition: opacity 0.2s;
-    }
-    [data-testid="stSidebar"]:hover [data-testid="stSidebarCollapseButton"] {
-        opacity: 0.7;
+    /* Hide sidebar collapse button (renders broken text on Cloud) */
+    [data-testid="stSidebarCollapseButton"],
+    button[kind="header"] {
+        display: none !important;
     }
 
     /* ================================================================

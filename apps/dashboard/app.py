@@ -31,9 +31,14 @@ def _check_demo_mode() -> bool:
         return True
     try:
         val = st.secrets["DEMO_MODE"]
-        return str(val).lower() in ("true", "1", "yes")
+        if str(val).lower() in ("true", "1", "yes"):
+            return True
     except (KeyError, FileNotFoundError, Exception):
-        return False
+        pass
+    # Auto-demo when no OAuth credentials are configured
+    if not os.getenv("OURA_CLIENT_ID"):
+        return True
+    return False
 
 DEMO_MODE = _check_demo_mode()
 
