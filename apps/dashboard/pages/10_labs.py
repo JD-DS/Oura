@@ -126,7 +126,7 @@ for test in selected_tests:
     if pd.notna(lo) and pd.notna(hi):
         fig.add_hrect(
             y0=lo, y1=hi,
-            fillcolor="rgba(0, 212, 160, 0.08)",
+            fillcolor="rgba(52, 211, 153, 0.06)",
             line_width=0,
         )
         fig.add_hline(y=lo, line_dash="dash", line_color=COLOR_WARNING, line_width=1)
@@ -135,12 +135,12 @@ for test in selected_tests:
     unit = row0.get("unit", "")
     y_title = f"{test} ({unit})" if unit else test
     fig.update_layout(
-        title={"text": test, "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+        title={"text": test, "font": {"family": "DM Sans, -apple-system, sans-serif", "size": 14, "color": "#f0f0f2"}},
         xaxis_title="Date",
         yaxis_title=y_title,
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         hovermode="x unified",

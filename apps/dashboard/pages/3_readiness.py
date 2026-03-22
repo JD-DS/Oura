@@ -92,7 +92,7 @@ fig.update_layout(
     yaxis_title="Score (0-100)",
     paper_bgcolor=CHART_PAPER_BG,
     plot_bgcolor=CHART_BG,
-    font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+    font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
     xaxis={"gridcolor": CHART_GRID_COLOR},
     yaxis={"gridcolor": CHART_GRID_COLOR},
     legend=dict(orientation="h", yanchor="bottom", y=1.02, font={"size": 10}),
@@ -119,7 +119,7 @@ with col2:
     st.markdown(section_header("Contributor Heatmap", theme_mode), unsafe_allow_html=True)
     contrib_data = rd_df.set_index("day")[available_cols].dropna()
     if not contrib_data.empty:
-        colorscale = [[0, COLOR_BAD], [0.5, "#ffb800"], [1, COLOR_GOOD]]
+        colorscale = [[0, COLOR_BAD], [0.5, "#fbbf24"], [1, COLOR_GOOD]]
         fig = px.imshow(
             contrib_data.T, aspect="auto",
             labels={"x": "Date", "y": "Contributor", "color": "Score"},
@@ -128,7 +128,7 @@ with col2:
         fig.update_layout(
             paper_bgcolor=CHART_PAPER_BG,
             plot_bgcolor=CHART_BG,
-            font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+            font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
             margin=dict(t=20, b=40, l=100, r=20),
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -164,11 +164,11 @@ if not workouts_df.empty:
                 marker_color=[COLOR_GOOD if v >= 0 else COLOR_BAD for v in by_intensity["readiness_delta"]],
             ))
             fig.update_layout(
-                title={"text": "Next-Day Readiness by Workout Intensity", "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+                title={"text": "Next-Day Readiness by Workout Intensity", "font": {"family": "DM Sans, -apple-system, sans-serif", "size": 14, "color": "#f0f0f2"}},
                 yaxis_title="Readiness Delta",
                 paper_bgcolor=CHART_PAPER_BG,
                 plot_bgcolor=CHART_BG,
-                font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+                font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
                 xaxis={"gridcolor": CHART_GRID_COLOR},
                 yaxis={"gridcolor": CHART_GRID_COLOR},
                 margin=dict(t=50, b=40, l=50, r=20),

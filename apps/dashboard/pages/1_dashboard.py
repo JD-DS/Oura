@@ -40,11 +40,15 @@ latest = daily.iloc[-1] if not daily.empty else {}
 # Key metrics row
 cols = st.columns(5)
 
+stress_val = latest.get("stress_summary", "—")
+if isinstance(stress_val, str) and len(stress_val) > 8:
+    stress_val = stress_val[:8].rstrip()
+
 metrics = [
     ("Sleep", latest.get("sleep_score"), ""),
-    ("Readiness", latest.get("readiness_score"), ""),
+    ("Ready", latest.get("readiness_score"), ""),
     ("Activity", latest.get("activity_score"), ""),
-    ("Stress", latest.get("stress_summary", "—"), ""),
+    ("Stress", stress_val, ""),
     ("SpO2", f"{latest.get('spo2_avg', 0):.0f}%" if latest.get("spo2_avg") else "—", ""),
 ]
 

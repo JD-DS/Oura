@@ -83,7 +83,7 @@ if not hr_df.empty:
     fig.update_layout(
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         hovermode="x unified",
@@ -102,7 +102,7 @@ if not hr_df.empty:
         fig.update_layout(
             paper_bgcolor=CHART_PAPER_BG,
             plot_bgcolor=CHART_BG,
-            font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+            font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
             xaxis={"gridcolor": CHART_GRID_COLOR},
             yaxis={"gridcolor": CHART_GRID_COLOR},
             showlegend=False,
@@ -173,7 +173,7 @@ if not res_df.empty:
     fig.update_layout(
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         legend=dict(orientation="h", yanchor="bottom", y=1.02, font={"size": 10}),

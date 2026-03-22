@@ -79,7 +79,7 @@ with col2:
         fig.update_layout(
             paper_bgcolor=CHART_PAPER_BG,
             plot_bgcolor=CHART_BG,
-            font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+            font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
             margin=dict(t=20, b=40, l=50, r=20),
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -108,7 +108,7 @@ with col1:
             yaxis_title="BPM",
             paper_bgcolor=CHART_PAPER_BG,
             plot_bgcolor=CHART_BG,
-            font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+            font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
             xaxis={"gridcolor": CHART_GRID_COLOR},
             yaxis={"gridcolor": CHART_GRID_COLOR},
             hovermode="x unified",
@@ -152,12 +152,12 @@ if not nights.empty:
         hovertext=[phase_labels.get(p, "?") for p in phases],
     ))
     fig.update_layout(
-        title={"text": str(selected_day), "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+        title={"text": str(selected_day), "font": {"family": "DM Sans, -apple-system, sans-serif", "size": 14, "color": "#f0f0f2"}},
         xaxis_title="5-min intervals",
         yaxis=dict(visible=False),
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         height=120,
         showlegend=False,
         margin=dict(t=35, b=30, l=20, r=20),

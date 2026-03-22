@@ -69,8 +69,9 @@ def save_activity_rows(
     if df.empty:
         return 0
 
-    from datetime import datetime
-    now = datetime.utcnow().isoformat()
+    from datetime import UTC, datetime
+
+    now = datetime.now(UTC).isoformat()
 
     rows = []
     for _, row in df.iterrows():
@@ -136,11 +137,11 @@ def save_lab_results(
     results: list[dict],
 ) -> int:
     """Insert lab results. Returns number of rows written."""
-    from datetime import datetime
+    from datetime import UTC, datetime
 
     if not results:
         return 0
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(UTC).isoformat()
     rows = [
         (
             r.get("test_name", ""),

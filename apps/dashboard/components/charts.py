@@ -1,7 +1,6 @@
 """Reusable Plotly chart builders for the Oura Health Dashboard.
 
 All theme colors, thresholds, and defaults come from config.py.
-Styled for the retro-minimal aesthetic.
 """
 
 from __future__ import annotations
@@ -30,30 +29,41 @@ from config import (
 
 
 def _get_chart_layout() -> dict:
-    """Return common layout settings for retro-minimal charts."""
+    """Return common layout settings for charts."""
     return {
         "template": CHART_TEMPLATE,
         "paper_bgcolor": CHART_PAPER_BG,
         "plot_bgcolor": CHART_BG,
-        "font": {"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
-        "title": {"font": {"family": "Space Grotesk, sans-serif", "size": 16, "color": "#e8e8e8"}},
+        "font": {"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa", "size": 12},
+        "title": {
+            "font": {"family": "DM Sans, -apple-system, sans-serif", "size": 14, "color": "#f0f0f2"},
+            "x": 0,
+            "xanchor": "left",
+            "pad": {"l": 4},
+        },
         "xaxis": {
             "gridcolor": CHART_GRID_COLOR,
-            "linecolor": "rgba(0, 212, 255, 0.1)",
-            "tickfont": {"size": 11},
+            "linecolor": "rgba(255, 255, 255, 0.04)",
+            "tickfont": {"size": 11, "color": "#71717a"},
+            "title_font": {"size": 11, "color": "#71717a"},
         },
         "yaxis": {
             "gridcolor": CHART_GRID_COLOR,
-            "linecolor": "rgba(0, 212, 255, 0.1)",
-            "tickfont": {"size": 11},
+            "linecolor": "rgba(255, 255, 255, 0.04)",
+            "tickfont": {"size": 11, "color": "#71717a"},
+            "title_font": {"size": 11, "color": "#71717a"},
         },
-        "legend": {"font": {"size": 11}},
+        "legend": {
+            "font": {"size": 11, "color": "#a1a1aa"},
+            "bgcolor": "rgba(0,0,0,0)",
+        },
         "hoverlabel": {
-            "bgcolor": "#1a1a24",
-            "bordercolor": "rgba(0, 212, 255, 0.3)",
-            "font": {"family": "IBM Plex Sans, sans-serif", "color": "#e8e8e8"},
+            "bgcolor": "#1e1e26",
+            "bordercolor": "rgba(45, 212, 191, 0.2)",
+            "font": {"family": "Inter, sans-serif", "color": "#f0f0f2", "size": 12},
         },
-        "margin": {"t": 50, "b": 40, "l": 50, "r": 20},
+        "margin": {"t": 44, "b": 36, "l": 48, "r": 16},
+        "hovermode": "x unified",
     }
 
 
@@ -64,15 +74,15 @@ def score_kpi(label: str, value, delta=None, suffix: str = ""):
 
 
 def sparkline(values: list, height: int | None = None) -> go.Figure:
-    """Minimal sparkline chart with neon glow effect."""
+    """Minimal sparkline chart."""
     h = height or SPARKLINE_HEIGHT
     fig = go.Figure(
         go.Scatter(
             y=values,
             mode="lines",
-            line=dict(width=2, color=THEME_PRIMARY),
+            line=dict(width=1.5, color=THEME_PRIMARY),
             fill="tozeroy",
-            fillcolor="rgba(0, 212, 255, 0.1)",
+            fillcolor="rgba(45, 212, 191, 0.06)",
         )
     )
     fig.update_layout(
@@ -201,11 +211,10 @@ def correlation_matrix(df: pd.DataFrame, columns: list[str] | None = None) -> go
         df = df[columns]
     corr = df.select_dtypes(include="number").corr()
     
-    # Custom colorscale matching retro theme
     colorscale = [
-        [0.0, "#ff2d95"],    # Negative: magenta
-        [0.5, "#12121a"],    # Zero: dark
-        [1.0, "#00d4ff"],    # Positive: cyan
+        [0.0, "#f87171"],    # Negative: rose
+        [0.5, "#16161c"],    # Zero: dark surface
+        [1.0, "#2dd4bf"],    # Positive: teal
     ]
     
     fig = px.imshow(
@@ -235,11 +244,10 @@ def calendar_heatmap(df: pd.DataFrame, date_col: str, value_col: str, title: str
     df["weekday"] = df[date_col].dt.dayofweek
     df["week"] = df[date_col].dt.isocalendar().week.astype(int)
 
-    # Retro gradient colorscale
     colorscale = [
-        [0.0, "#ff4757"],
-        [0.5, "#ffb800"],
-        [1.0, "#00d4a0"],
+        [0.0, "#f87171"],
+        [0.5, "#fbbf24"],
+        [1.0, "#34d399"],
     ]
 
     fig = px.scatter(
@@ -298,7 +306,7 @@ def anomaly_timeline(
             mode="lines",
             line=dict(width=0),
             fill="tonexty",
-            fillcolor="rgba(0, 212, 255, 0.08)",
+            fillcolor="rgba(45, 212, 191, 0.06)",
             name=f"{threshold}σ band",
         )
     )
@@ -361,7 +369,7 @@ def pie_chart(labels: list, values: list, title: str, colors: dict | None = None
     layout.update({"title": {"text": title}})
     fig.update_layout(**layout)
     fig.update_traces(
-        textfont={"family": "JetBrains Mono, monospace", "size": 12},
+        textfont={"family": "Inter, sans-serif", "size": 11},
         marker={"line": {"color": CHART_BG, "width": 2}},
     )
     return fig

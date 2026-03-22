@@ -91,7 +91,7 @@ if has_oura:
 fig.update_layout(
     paper_bgcolor=CHART_PAPER_BG,
     plot_bgcolor=CHART_BG,
-    font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+    font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
     xaxis={"gridcolor": CHART_GRID_COLOR},
     yaxis={"gridcolor": CHART_GRID_COLOR},
     legend=dict(orientation="h", yanchor="bottom", y=1.02, font={"size": 10}),
@@ -108,10 +108,10 @@ if has_oura:
 if has_imported and "calories" in imported.columns:
     fig = go.Figure(go.Bar(x=imported["day"], y=imported["calories"], name="Calories (imported)", marker_color=THEME_SECONDARY))
     fig.update_layout(
-        title={"text": "Imported Calories", "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+        title={"text": "Imported Calories", "font": {"family": "DM Sans, -apple-system, sans-serif", "size": 14, "color": "#f0f0f2"}},
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         margin=dict(t=50, b=40, l=50, r=20),
@@ -132,7 +132,7 @@ if available:
         yaxis_title="Minutes",
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         legend=dict(orientation="h", yanchor="bottom", y=1.02, font={"size": 10}),
@@ -158,7 +158,7 @@ if has_imported and "workouts" in imported.columns and imported["workouts"].notn
     fig.update_layout(
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         margin=dict(t=20, b=40, l=50, r=20),

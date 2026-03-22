@@ -62,32 +62,32 @@ DATA_DIR = _env("DATA_DIR", "data")
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR_ABSOLUTE = str(_PROJECT_ROOT / DATA_DIR) if not Path(DATA_DIR).is_absolute() else DATA_DIR
 
-# --- Chart Theme (Retro-Minimal) ---
+# --- Chart Theme ---
 
 CHART_TEMPLATE = _env("CHART_TEMPLATE", "plotly_dark")
 
-# Primary accent colors (neon palette)
-THEME_PRIMARY = _env("THEME_PRIMARY", "#00d4ff")  # Cyan
-THEME_SECONDARY = _env("THEME_SECONDARY", "#ff2d95")  # Magenta
-THEME_TERTIARY = _env("THEME_TERTIARY", "#ffb800")  # Amber
+# Primary accent colors
+THEME_PRIMARY = _env("THEME_PRIMARY", "#2dd4bf")   # Teal
+THEME_SECONDARY = _env("THEME_SECONDARY", "#a78bfa")  # Violet
+THEME_TERTIARY = _env("THEME_TERTIARY", "#fbbf24")  # Amber
 
 # Background colors for charts
-CHART_BG = _env("CHART_BG", "#0a0a0f")
-CHART_PAPER_BG = _env("CHART_PAPER_BG", "#12121a")
-CHART_GRID_COLOR = _env("CHART_GRID_COLOR", "rgba(0, 212, 255, 0.06)")
+CHART_BG = _env("CHART_BG", "#0c0c10")
+CHART_PAPER_BG = _env("CHART_PAPER_BG", "#16161c")
+CHART_GRID_COLOR = _env("CHART_GRID_COLOR", "rgba(255, 255, 255, 0.04)")
 
 SLEEP_STAGE_COLORS = {
-    "deep_h": _env("COLOR_DEEP_SLEEP", "#0066cc"),  # Deep blue
-    "light_h": _env("COLOR_LIGHT_SLEEP", "#00d4ff"),  # Cyan
-    "rem_h": _env("COLOR_REM_SLEEP", "#ff2d95"),  # Magenta
-    "awake_h": _env("COLOR_AWAKE", "#ff4757"),  # Red
+    "deep_h": _env("COLOR_DEEP_SLEEP", "#6366f1"),   # Indigo
+    "light_h": _env("COLOR_LIGHT_SLEEP", "#2dd4bf"),  # Teal
+    "rem_h": _env("COLOR_REM_SLEEP", "#a78bfa"),      # Violet
+    "awake_h": _env("COLOR_AWAKE", "#f87171"),         # Rose
 }
 
-# Status colors (neon variants)
-COLOR_GOOD = _env("COLOR_GOOD", "#00d4a0")  # Neon green
-COLOR_WARNING = _env("COLOR_WARNING", "#ffb800")  # Amber
-COLOR_BAD = _env("COLOR_BAD", "#ff4757")  # Neon red
-COLOR_INFO = _env("COLOR_INFO", "#00d4ff")  # Cyan
+# Status colors
+COLOR_GOOD = _env("COLOR_GOOD", "#34d399")   # Emerald
+COLOR_WARNING = _env("COLOR_WARNING", "#fbbf24")  # Amber
+COLOR_BAD = _env("COLOR_BAD", "#f87171")     # Rose
+COLOR_INFO = _env("COLOR_INFO", "#38bdf8")   # Sky
 
 STRESS_COLORS = {
     "restored": COLOR_GOOD,
@@ -97,12 +97,12 @@ STRESS_COLORS = {
 
 # Chart color sequence for multi-series
 CHART_COLOR_SEQUENCE = [
-    "#00d4ff",  # Cyan
-    "#ff2d95",  # Magenta
-    "#ffb800",  # Amber
-    "#00d4a0",  # Green
-    "#9d4edd",  # Purple
-    "#ff6b6b",  # Coral
+    "#2dd4bf",  # Teal
+    "#a78bfa",  # Violet
+    "#38bdf8",  # Sky
+    "#fbbf24",  # Amber
+    "#fb7185",  # Rose
+    "#34d399",  # Emerald
 ]
 
 # --- Sleep Analyzer Thresholds ---

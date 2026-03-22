@@ -27,6 +27,8 @@ from styles import (
     theme_toggle_html,
 )
 
+DEMO_MODE = os.getenv("DEMO_MODE", "").lower() in ("true", "1", "yes")
+
 st.set_page_config(
     page_title="Oura Health Dashboard",
     page_icon="💍",
@@ -43,11 +45,15 @@ theme_mode = st.session_state.get("theme_mode", "minimal")
 # Inject custom CSS based on theme mode
 st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
 
-handle_callback()
+if DEMO_MODE:
+    st.session_state["access_token"] = "__sandbox__"
+    st.session_state["sandbox_mode"] = True
+else:
+    handle_callback()
 
-if not is_authenticated():
-    show_login_page()
-    st.stop()
+    if not is_authenticated():
+        show_login_page()
+        st.stop()
 
 # --- Sidebar controls ---
 
@@ -96,15 +102,14 @@ with st.sidebar:
 
     st.markdown("<div style='height: 0.75rem;'></div>", unsafe_allow_html=True)
 
-    # Demo mode toggle (only show if not already in sandbox)
-    if not is_sandbox:
+    if not DEMO_MODE and not is_sandbox:
         sandbox_toggle = st.toggle("Demo data", value=False)
         if sandbox_toggle:
             st.session_state["sandbox_mode"] = True
         else:
             st.session_state["sandbox_mode"] = False
 
-    st.markdown("<hr style='margin: 1.25rem 0; border-color: rgba(0, 212, 255, 0.08);'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 1.25rem 0; border-color: rgba(255, 255, 255, 0.06);'>", unsafe_allow_html=True)
     
     # Export section
     st.markdown(sidebar_label("Export"), unsafe_allow_html=True)
@@ -129,12 +134,12 @@ with st.sidebar:
         else:
             st.caption("No data to export")
     
-    st.markdown("<hr style='margin: 1.25rem 0; border-color: rgba(0, 212, 255, 0.08);'>", unsafe_allow_html=True)
+    st.markdown("<hr style='margin: 1.25rem 0; border-color: rgba(255, 255, 255, 0.06);'>", unsafe_allow_html=True)
     
-    # Logout
-    if st.button("Sign out", use_container_width=True):
-        logout()
-        st.rerun()
+    if not DEMO_MODE:
+        if st.button("Sign out", use_container_width=True):
+            logout()
+            st.rerun()
 
 # --- Page navigation ---
 

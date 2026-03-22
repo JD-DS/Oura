@@ -278,7 +278,7 @@ else:
             if ref_low is not None and ref_high is not None:
                 fig.add_hrect(
                     y0=ref_low, y1=ref_high,
-                    fillcolor="rgba(0, 212, 160, 0.08)",
+                    fillcolor="rgba(52, 211, 153, 0.06)",
                     line_width=0
                 )
                 fig.add_hline(y=ref_low, line_dash="dash", line_color=COLOR_WARNING, line_width=1)
@@ -286,7 +286,7 @@ else:
 
             if mean_val and std_val:
                 fig.add_hline(
-                    y=mean_val, line_dash="dot", line_color="#4b5563",
+                    y=mean_val, line_dash="dot", line_color="#52525b",
                     annotation_text="baseline", annotation_position="right"
                 )
 
@@ -294,12 +294,12 @@ else:
             y_title = f"{test} ({unit})" if unit else test
             trend_label = f" ({trend_direction})" if trend_direction != "stable" else ""
             fig.update_layout(
-                title={"text": f"{test}{trend_label}", "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+                title={"text": f"{test}{trend_label}", "font": {"family": "DM Sans, -apple-system, sans-serif", "size": 14, "color": "#f0f0f2"}},
                 xaxis_title="Date",
                 yaxis_title=y_title,
                 paper_bgcolor=CHART_PAPER_BG,
                 plot_bgcolor=CHART_BG,
-                font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+                font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
                 xaxis={"gridcolor": CHART_GRID_COLOR},
                 yaxis={"gridcolor": CHART_GRID_COLOR},
                 hovermode="x unified",
