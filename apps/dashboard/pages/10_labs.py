@@ -26,8 +26,7 @@ from styles import (
     warning_card,
 )
 
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 labs_start_default = str(date.today() - timedelta(days=365))
 labs_end_default = str(date.today())
@@ -36,7 +35,7 @@ start = st.session_state.get("start_date", labs_start_default)
 end = st.session_state.get("end_date", labs_end_default)
 
 st.markdown(
-    page_header("Labs", "Biomarker trends from imported blood panels", theme_mode),
+    page_header("Labs", "Biomarker trends from imported blood panels"),
     unsafe_allow_html=True
 )
 
@@ -48,12 +47,12 @@ except Exception as e:
 
 if labs.empty:
     st.markdown(
-        info_card("No lab results for this date range. Upload blood panel PDFs on the Import page.", theme_mode),
+        info_card("No lab results for this date range. Upload blood panel PDFs on the Import page."),
         unsafe_allow_html=True
     )
     st.stop()
 
-st.markdown(section_header("Out-of-Range Summary", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Out-of-Range Summary"), unsafe_allow_html=True)
 
 if "reference_low" in labs.columns and "reference_high" in labs.columns:
     def is_out_of_range(row):
@@ -72,7 +71,7 @@ if "reference_low" in labs.columns and "reference_high" in labs.columns:
     
     if out_count > 0:
         st.markdown(
-            warning_card(f"{int(out_count)} result(s) outside reference range", theme_mode),
+            warning_card(f"{int(out_count)} result(s) outside reference range"),
             unsafe_allow_html=True
         )
         out_df = labs[labs["out_of_range"]].copy()
@@ -87,11 +86,11 @@ if "reference_low" in labs.columns and "reference_high" in labs.columns:
         )
     else:
         st.markdown(
-            success_card("All results within reference range", theme_mode),
+            success_card("All results within reference range"),
             unsafe_allow_html=True
         )
 
-st.markdown(section_header("Biomarker Trends", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Biomarker Trends"), unsafe_allow_html=True)
 
 test_names = sorted(labs["test_name"].unique().tolist())
 if not test_names:
@@ -126,7 +125,7 @@ for test in selected_tests:
     if pd.notna(lo) and pd.notna(hi):
         fig.add_hrect(
             y0=lo, y1=hi,
-            fillcolor="rgba(0, 212, 160, 0.08)",
+            fillcolor="rgba(52, 211, 153, 0.06)",
             line_width=0,
         )
         fig.add_hline(y=lo, line_dash="dash", line_color=COLOR_WARNING, line_width=1)
@@ -135,12 +134,12 @@ for test in selected_tests:
     unit = row0.get("unit", "")
     y_title = f"{test} ({unit})" if unit else test
     fig.update_layout(
-        title={"text": test, "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+        title={"text": test, "font": {"family": "Inter, -apple-system, sans-serif", "size": 13, "color": "#d4d4d8"}},
         xaxis_title="Date",
         yaxis_title=y_title,
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         hovermode="x unified",

@@ -28,8 +28,7 @@ from styles import (
     info_card,
 )
 
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
@@ -40,7 +39,6 @@ st.markdown(
     page_header(
         "Activity",
         "Track your daily movement, calories burned, and activity patterns",
-        theme_mode
     ),
     unsafe_allow_html=True
 )
@@ -50,7 +48,7 @@ imported = get_imported_activity_df(DATA_DIR_ABSOLUTE, start, end)
 
 if df.empty and imported.empty:
     st.markdown(
-        info_card("No activity data available. Connect Oura or import data.", theme_mode),
+        info_card("No activity data available. Connect Oura or import data."),
         unsafe_allow_html=True
     )
     st.stop()
@@ -80,7 +78,7 @@ if has_imported:
     if pd.notna(cal_imp):
         st.caption(f"Imported calories (latest): {cal_imp:,.0f} kcal")
 
-st.markdown(section_header("Daily Steps", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Daily Steps"), unsafe_allow_html=True)
 fig = make_subplots(specs=[[{"secondary_y": True}]])
 if has_oura:
     fig.add_trace(go.Bar(x=df["day"], y=df["steps"], name="Steps (Oura)", opacity=0.7, marker_color=THEME_PRIMARY), secondary_y=False)
@@ -91,7 +89,7 @@ if has_oura:
 fig.update_layout(
     paper_bgcolor=CHART_PAPER_BG,
     plot_bgcolor=CHART_BG,
-    font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+    font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
     xaxis={"gridcolor": CHART_GRID_COLOR},
     yaxis={"gridcolor": CHART_GRID_COLOR},
     legend=dict(orientation="h", yanchor="bottom", y=1.02, font={"size": 10}),
@@ -101,24 +99,24 @@ fig.update_yaxes(title_text="Steps", secondary_y=False, gridcolor=CHART_GRID_COL
 fig.update_yaxes(title_text="Active Calories", secondary_y=True, gridcolor=CHART_GRID_COLOR)
 st.plotly_chart(fig, use_container_width=True)
 
-st.markdown(section_header("Calories", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Calories"), unsafe_allow_html=True)
 if has_oura:
     fig = grouped_bar(df, "day", [("active_cal", "Active", COLOR_GOOD), ("total_cal", "Total", COLOR_INFO)], "")
     st.plotly_chart(fig, use_container_width=True)
 if has_imported and "calories" in imported.columns:
     fig = go.Figure(go.Bar(x=imported["day"], y=imported["calories"], name="Calories (imported)", marker_color=THEME_SECONDARY))
     fig.update_layout(
-        title={"text": "Imported Calories", "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+        title={"text": "Imported Calories", "font": {"family": "Inter, -apple-system, sans-serif", "size": 13, "color": "#d4d4d8"}},
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         margin=dict(t=50, b=40, l=50, r=20),
     )
     st.plotly_chart(fig, use_container_width=True)
 
-st.markdown(section_header("Activity Time", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Activity Time"), unsafe_allow_html=True)
 time_cols = ["high_activity_min", "medium_activity_min", "low_activity_min"]
 available = [c for c in time_cols if c in df.columns] if has_oura else []
 if available:
@@ -132,7 +130,7 @@ if available:
         yaxis_title="Minutes",
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         legend=dict(orientation="h", yanchor="bottom", y=1.02, font={"size": 10}),
@@ -143,22 +141,22 @@ if available:
 col1, col2 = st.columns(2)
 if has_oura:
     with col1:
-        st.markdown(section_header("Walking Distance", theme_mode), unsafe_allow_html=True)
+        st.markdown(section_header("Walking Distance"), unsafe_allow_html=True)
         fig = trend_line(df, "day", "eq_walk_km", "", y_label="km")
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        st.markdown(section_header("Sedentary Time", theme_mode), unsafe_allow_html=True)
+        st.markdown(section_header("Sedentary Time"), unsafe_allow_html=True)
         fig = trend_line(df, "day", "sedentary_h", "", y_label="Hours")
         st.plotly_chart(fig, use_container_width=True)
 
 if has_imported and "workouts" in imported.columns and imported["workouts"].notna().any():
-    st.markdown(section_header("Workout Minutes (Imported)", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("Workout Minutes (Imported)"), unsafe_allow_html=True)
     fig = go.Figure(go.Bar(x=imported["day"], y=imported["workouts"], name="Workouts", marker_color=COLOR_GOOD))
     fig.update_layout(
         paper_bgcolor=CHART_PAPER_BG,
         plot_bgcolor=CHART_BG,
-        font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+        font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
         xaxis={"gridcolor": CHART_GRID_COLOR},
         yaxis={"gridcolor": CHART_GRID_COLOR},
         margin=dict(t=20, b=40, l=50, r=20),

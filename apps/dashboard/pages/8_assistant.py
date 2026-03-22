@@ -13,8 +13,7 @@ from styles import (
     neon_badge,
 )
 
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
@@ -22,7 +21,7 @@ start = st.session_state.get("start_date", "")
 end = st.session_state.get("end_date", "")
 
 st.markdown(
-    page_header("Assistant", "Ask questions about your health data", theme_mode),
+    page_header("Assistant", "Ask questions about your health data"),
     unsafe_allow_html=True
 )
 
@@ -33,7 +32,7 @@ badges = [
     ("Statistics", "amber"),
     ("Lab Results", "green"),
 ]
-badge_html = " ".join([neon_badge(text, color, theme_mode) for text, color in badges])
+badge_html = " ".join([neon_badge(text, color) for text, color in badges])
 st.markdown(f"<div style='margin-bottom: 1.5rem;'>{badge_html}</div>", unsafe_allow_html=True)
 
 if not token:
@@ -41,8 +40,7 @@ if not token:
         empty_state(
             "Authentication required",
             "Connect to Oura to use the AI assistant.",
-            "◇",
-            theme_mode
+            "◇"
         ),
         unsafe_allow_html=True
     )
@@ -63,8 +61,7 @@ if not st.session_state.assistant_messages:
         empty_state(
             "Start a conversation",
             "Ask about your sleep, activity, HRV, or research from PubMed.",
-            "◇",
-            theme_mode
+            "◇"
         ),
         unsafe_allow_html=True
     )

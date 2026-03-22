@@ -24,8 +24,7 @@ from styles import (
     info_card,
 )
 
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
@@ -36,7 +35,6 @@ st.markdown(
     page_header(
         "Readiness",
         "Understand what affects your daily readiness and optimize recovery",
-        theme_mode
     ),
     unsafe_allow_html=True
 )
@@ -45,7 +43,7 @@ rd_df = get_readiness_df(token, start, end, sandbox)
 
 if rd_df.empty:
     st.markdown(
-        info_card("No readiness data available for the selected date range.", theme_mode),
+        info_card("No readiness data available for the selected date range."),
         unsafe_allow_html=True
     )
     st.stop()
@@ -66,11 +64,11 @@ with cols[2]:
 with cols[3]:
     st.metric("Temp Deviation", f"{temp_dev:+.2f}°C" if pd.notna(temp_dev) else "—")
 
-st.markdown(section_header("Readiness Score Trend", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Readiness Score Trend"), unsafe_allow_html=True)
 fig = trend_line(rd_df, "day", "readiness_score", "", y_label="Score (0-100)")
 st.plotly_chart(fig, use_container_width=True)
 
-st.markdown(section_header("Contributors Over Time", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Contributors Over Time"), unsafe_allow_html=True)
 contributor_cols = [
     "hrv_balance", "body_temp", "prev_night", "sleep_balance",
     "recovery_index", "resting_hr", "activity_balance", "sleep_regularity",
@@ -92,7 +90,7 @@ fig.update_layout(
     yaxis_title="Score (0-100)",
     paper_bgcolor=CHART_PAPER_BG,
     plot_bgcolor=CHART_BG,
-    font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+    font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
     xaxis={"gridcolor": CHART_GRID_COLOR},
     yaxis={"gridcolor": CHART_GRID_COLOR},
     legend=dict(orientation="h", yanchor="bottom", y=1.02, font={"size": 10}),
@@ -104,7 +102,7 @@ st.plotly_chart(fig, use_container_width=True)
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown(section_header("Weakest Contributors", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("Weakest Contributors"), unsafe_allow_html=True)
 
     if available_cols:
         avg_contribs = rd_df[available_cols].mean().sort_values()
@@ -116,10 +114,10 @@ with col1:
         st.plotly_chart(fig, use_container_width=True)
 
 with col2:
-    st.markdown(section_header("Contributor Heatmap", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("Contributor Heatmap"), unsafe_allow_html=True)
     contrib_data = rd_df.set_index("day")[available_cols].dropna()
     if not contrib_data.empty:
-        colorscale = [[0, COLOR_BAD], [0.5, "#ffb800"], [1, COLOR_GOOD]]
+        colorscale = [[0, COLOR_BAD], [0.5, "#fbbf24"], [1, COLOR_GOOD]]
         fig = px.imshow(
             contrib_data.T, aspect="auto",
             labels={"x": "Date", "y": "Contributor", "color": "Score"},
@@ -128,12 +126,12 @@ with col2:
         fig.update_layout(
             paper_bgcolor=CHART_PAPER_BG,
             plot_bgcolor=CHART_BG,
-            font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+            font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
             margin=dict(t=20, b=40, l=100, r=20),
         )
         st.plotly_chart(fig, use_container_width=True)
 
-st.markdown(section_header("Workout Recovery", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Workout Recovery"), unsafe_allow_html=True)
 
 workouts_df = get_workouts_df(token, start, end, sandbox)
 
@@ -164,11 +162,11 @@ if not workouts_df.empty:
                 marker_color=[COLOR_GOOD if v >= 0 else COLOR_BAD for v in by_intensity["readiness_delta"]],
             ))
             fig.update_layout(
-                title={"text": "Next-Day Readiness by Workout Intensity", "font": {"family": "Space Grotesk", "size": 14, "color": "#e8e8e8"}},
+                title={"text": "Next-Day Readiness by Workout Intensity", "font": {"family": "Inter, -apple-system, sans-serif", "size": 13, "color": "#d4d4d8"}},
                 yaxis_title="Readiness Delta",
                 paper_bgcolor=CHART_PAPER_BG,
                 plot_bgcolor=CHART_BG,
-                font={"family": "IBM Plex Sans, sans-serif", "color": "#9ca3af"},
+                font={"family": "Inter, -apple-system, sans-serif", "color": "#a1a1aa"},
                 xaxis={"gridcolor": CHART_GRID_COLOR},
                 yaxis={"gridcolor": CHART_GRID_COLOR},
                 margin=dict(t=50, b=40, l=50, r=20),
@@ -179,7 +177,7 @@ if not workouts_df.empty:
 else:
     st.caption("No workout data available")
 
-st.markdown(section_header("Temperature Deviation", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Temperature Deviation"), unsafe_allow_html=True)
 temp_df = rd_df.dropna(subset=["temp_dev"])
 if not temp_df.empty:
     fig = trend_line(temp_df, "day", "temp_dev", "", y_label="°C deviation")
