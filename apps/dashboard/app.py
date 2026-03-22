@@ -8,6 +8,7 @@ import sys
 import os
 
 import streamlit as st
+from streamlit.components.v1 import html as _components_html
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 sys.path.insert(0, os.path.dirname(__file__))
@@ -126,6 +127,88 @@ with st.sidebar:
         if st.button("Sign out", use_container_width=True):
             logout()
             st.rerun()
+
+# --- Sidebar toggle ---
+
+_SIDEBAR_TOGGLE_JS = """
+<script>
+(function() {
+    var doc = window.parent.document;
+
+    // Always recreate to get a fresh handler (old iframe context dies on rerun)
+    var old = doc.getElementById('sidebar-toggle-btn');
+    if (old) old.remove();
+
+    var btn = doc.createElement('button');
+    btn.id = 'sidebar-toggle-btn';
+    btn.title = 'Toggle sidebar';
+    btn.setAttribute('aria-label', 'Toggle sidebar');
+
+    // Use a simple SVG hamburger icon (no font dependency)
+    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/></svg>';
+
+    btn.style.cssText = [
+        'position:fixed', 'top:12px', 'left:12px', 'z-index:999999',
+        'width:44px', 'height:44px',
+        'background:#141419',
+        'border:1px solid rgba(255,255,255,0.15)',
+        'border-radius:10px', 'cursor:pointer',
+        'color:#a1a1aa',
+        'display:none', 'align-items:center', 'justify-content:center',
+        'transition:all .15s ease', 'padding:0',
+        'box-shadow:0 4px 16px rgba(0,0,0,0.6)'
+    ].join(';');
+
+    btn.onmouseover = function() {
+        btn.style.borderColor = 'rgba(45,212,191,0.4)';
+        btn.style.color = '#2dd4bf';
+        btn.style.boxShadow = '0 4px 20px rgba(0,0,0,0.7), 0 0 0 1px rgba(45,212,191,0.15)';
+    };
+    btn.onmouseout = function() {
+        btn.style.borderColor = 'rgba(255,255,255,0.15)';
+        btn.style.color = '#a1a1aa';
+        btn.style.boxShadow = '0 4px 16px rgba(0,0,0,0.6)';
+    };
+
+    function getSidebar() {
+        return doc.querySelector('[data-testid="stSidebar"]');
+    }
+
+    function isExpanded() {
+        var sb = getSidebar();
+        return sb && sb.getAttribute('aria-expanded') !== 'false';
+    }
+
+    function updateVisibility() {
+        btn.style.display = isExpanded() ? 'none' : 'flex';
+    }
+
+    btn.onclick = function() {
+        // Click the native expand button (works even if visually hidden)
+        var targets = [
+            '[data-testid="stExpandSidebarButton"]',
+            '[data-testid="collapsedControl"] button'
+        ];
+        for (var i = 0; i < targets.length; i++) {
+            var el = doc.querySelector(targets[i]);
+            if (el) { el.click(); break; }
+        }
+        setTimeout(updateVisibility, 300);
+    };
+
+    doc.body.appendChild(btn);
+    updateVisibility();
+
+    // Watch sidebar state changes
+    var observer = new MutationObserver(function() { updateVisibility(); });
+    var sb = getSidebar();
+    if (sb) observer.observe(sb, {attributes: true, attributeFilter: ['aria-expanded']});
+    // Also observe body for late sidebar mount
+    observer.observe(doc.body, {childList: true, subtree: true});
+})();
+</script>
+"""
+_components_html(_SIDEBAR_TOGGLE_JS, height=0)
 
 # --- Page navigation ---
 
