@@ -46,7 +46,7 @@ st.set_page_config(
     page_title="Oura Health Dashboard",
     page_icon="💍",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
 st.markdown(get_custom_css(), unsafe_allow_html=True)

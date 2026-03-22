@@ -115,9 +115,38 @@ def get_custom_css() -> str:
         border-left-color: #2dd4bf !important;
     }
 
-    /* Hide sidebar collapse button (renders broken text on Cloud) */
-    [data-testid="stSidebarCollapseButton"],
+    /* Fix sidebar collapse button — hide broken icon text, show as clean arrow */
+    [data-testid="stSidebarCollapseButton"] button,
     button[kind="header"] {
+        font-size: 0 !important;
+        color: transparent !important;
+        width: 32px !important;
+        height: 32px !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        border-radius: 6px !important;
+        background: rgba(255,255,255,0.04) !important;
+        border: 1px solid rgba(255,255,255,0.06) !important;
+        position: relative !important;
+        cursor: pointer !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button::after,
+    button[kind="header"]::after {
+        content: '‹' !important;
+        font-size: 16px !important;
+        color: #71717a !important;
+        position: absolute !important;
+        inset: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button:hover,
+    button[kind="header"]:hover {
+        background: rgba(255,255,255,0.08) !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button span,
+    button[kind="header"] span {
         display: none !important;
     }
 
