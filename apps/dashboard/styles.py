@@ -8,7 +8,6 @@ def get_custom_css() -> str:
     return """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
 
     /* ================================================================
        AGGRESSIVE OVERRIDES — these must beat Streamlit's defaults
@@ -113,12 +112,11 @@ def get_custom_css() -> str:
         border-left-color: #2dd4bf !important;
     }
 
-    /* Sidebar collapse/expand button */
+    /* Sidebar collapse/expand button — hide broken icon text, show arrow */
     [data-testid="stSidebarCollapseButton"] button,
     [data-testid="collapsedControl"] button {
-        font-family: 'Material Symbols Rounded' !important;
-        font-size: 20px !important;
-        color: #a1a1aa !important;
+        color: transparent !important;
+        font-size: 0 !important;
         background: rgba(255,255,255,0.04) !important;
         border: 1px solid rgba(255,255,255,0.06) !important;
         border-radius: 6px !important;
@@ -127,11 +125,32 @@ def get_custom_css() -> str:
         min-height: 0 !important;
         padding: 0 !important;
         cursor: pointer !important;
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button::after,
+    [data-testid="collapsedControl"] button::after {
+        content: '\2039' !important;
+        font-size: 20px !important;
+        color: #a1a1aa !important;
+        line-height: 1 !important;
+    }
+    [data-testid="collapsedControl"] button::after {
+        content: '\203A' !important;
     }
     [data-testid="stSidebarCollapseButton"] button:hover,
     [data-testid="collapsedControl"] button:hover {
         background: rgba(255,255,255,0.08) !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button:hover::after,
+    [data-testid="collapsedControl"] button:hover::after {
         color: #f4f4f5 !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button span,
+    [data-testid="collapsedControl"] button span {
+        display: none !important;
     }
 
     /* ================================================================
