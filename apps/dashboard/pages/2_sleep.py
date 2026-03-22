@@ -29,8 +29,7 @@ from styles import (
     success_card,
 )
 
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
@@ -38,7 +37,7 @@ start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
 st.markdown(
-    page_header("Sleep", "Analyze your sleep patterns and quality", theme_mode),
+    page_header("Sleep", "Analyze your sleep patterns and quality"),
     unsafe_allow_html=True
 )
 
@@ -46,19 +45,19 @@ df = get_sleep_df(token, start, end, sandbox)
 
 if df.empty:
     st.markdown(
-        empty_state("No sleep data", "Try expanding the date range.", "◇", theme_mode),
+        empty_state("No sleep data", "Try expanding the date range.", "◇"),
         unsafe_allow_html=True
     )
     st.stop()
 
-st.markdown(section_header("Sleep Architecture", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Sleep Architecture"), unsafe_allow_html=True)
 fig = sleep_architecture_chart(df)
 st.plotly_chart(fig, use_container_width=True)
 
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown(section_header("HRV During Sleep", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("HRV During Sleep"), unsafe_allow_html=True)
     hrv_df = df.dropna(subset=["avg_hrv"])
     if not hrv_df.empty:
         fig = trend_line(hrv_df, "day", "avg_hrv", "", y_label="HRV (ms)")
@@ -67,7 +66,7 @@ with col1:
         st.caption("No HRV data")
 
 with col2:
-    st.markdown(section_header("Sleep Efficiency", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("Sleep Efficiency"), unsafe_allow_html=True)
     eff_df = df.dropna(subset=["efficiency"])
     if not eff_df.empty:
         fig = px.scatter(
@@ -88,7 +87,7 @@ with col2:
 
 col1, col2 = st.columns(2)
 with col1:
-    st.markdown(section_header("Heart Rate", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("Heart Rate"), unsafe_allow_html=True)
     hr_df = df.dropna(subset=["avg_hr"])
     if not hr_df.empty:
         fig = go.Figure()
@@ -118,7 +117,7 @@ with col1:
         st.plotly_chart(fig, use_container_width=True)
 
 with col2:
-    st.markdown(section_header("Breathing Rate", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("Breathing Rate"), unsafe_allow_html=True)
     br_df = df.dropna(subset=["avg_breath"])
     if not br_df.empty:
         fig = trend_line(br_df, "day", "avg_breath", "", y_label="breaths/min")
@@ -126,7 +125,7 @@ with col2:
     else:
         st.caption("No breathing data")
 
-st.markdown(section_header("Sleep Phases", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Sleep Phases"), unsafe_allow_html=True)
 nights = df[df["sleep_phase_5_min"].notna()]
 if not nights.empty:
     selected_day = st.selectbox(
@@ -152,7 +151,7 @@ if not nights.empty:
         hovertext=[phase_labels.get(p, "?") for p in phases],
     ))
     fig.update_layout(
-        title={"text": str(selected_day), "font": {"family": "DM Sans, -apple-system, sans-serif", "size": 14, "color": "#f0f0f2"}},
+        title={"text": str(selected_day), "font": {"family": "Inter, -apple-system, sans-serif", "size": 13, "color": "#d4d4d8"}},
         xaxis_title="5-min intervals",
         yaxis=dict(visible=False),
         paper_bgcolor=CHART_PAPER_BG,
@@ -166,7 +165,7 @@ if not nights.empty:
 else:
     st.caption("No phase data")
 
-st.markdown(section_header("Flagged Nights", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Flagged Nights"), unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 with col1:
@@ -183,7 +182,7 @@ flagged = df[
 
 if not flagged.empty:
     st.markdown(
-        warning_card(f"{len(flagged)} night(s) below thresholds", theme_mode),
+        warning_card(f"{len(flagged)} night(s) below thresholds"),
         unsafe_allow_html=True
     )
     st.dataframe(
@@ -193,6 +192,6 @@ if not flagged.empty:
     )
 else:
     st.markdown(
-        success_card("All nights above thresholds", theme_mode),
+        success_card("All nights above thresholds"),
         unsafe_allow_html=True
     )

@@ -1,635 +1,547 @@
-"""Premium Health Analytics Dashboard Styles.
-
-Sophisticated dark palette with teal accent, refined typography,
-and polished component styling inspired by Whoop, Apple Health, and Oura.
-"""
+"""Oura Health Dashboard — design system."""
 
 from __future__ import annotations
 
 
-def get_custom_css(theme_mode: str = "minimal") -> str:
-    """Return custom CSS for the dashboard."""
-    is_retro = theme_mode == "retro"
-
-    glow_intensity = "0.4" if is_retro else "0"
-    grid_opacity = "0.03" if is_retro else "0"
-    border_glow = "0 0 8px rgba(45, 212, 191, 0.15)" if is_retro else "none"
-    text_glow = "0 0 12px rgba(45, 212, 191, 0.3)" if is_retro else "none"
-
-    return f"""
+def get_custom_css() -> str:
+    """Return the dashboard CSS."""
+    return """
 <style>
-    /* === FONTS === */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-    /* === CSS CUSTOM PROPERTIES === */
-    :root {{
-        /* Background layers — warm dark */
-        --bg-void: #0c0c10;
-        --bg-primary: #101014;
-        --bg-surface: #16161c;
-        --bg-elevated: #1e1e26;
-        --bg-hover: #26262f;
+    /* ================================================================
+       AGGRESSIVE OVERRIDES — these must beat Streamlit's defaults
+       ================================================================ */
 
-        /* Text hierarchy — warm grays */
-        --text-primary: #f0f0f2;
-        --text-secondary: #a1a1aa;
-        --text-muted: #71717a;
-        --text-dim: #52525b;
-
-        /* Accent — refined teal */
-        --accent: #2dd4bf;
-        --accent-soft: rgba(45, 212, 191, 0.12);
-        --accent-border: rgba(45, 212, 191, 0.25);
-        --accent-hover: rgba(45, 212, 191, 0.18);
-
-        /* Supporting palette */
-        --violet: #a78bfa;
-        --rose: #fb7185;
-        --amber: #fbbf24;
-        --sky: #38bdf8;
-
-        /* Status */
-        --status-good: #34d399;
-        --status-warning: #fbbf24;
-        --status-danger: #f87171;
-
-        /* Borders */
-        --border-subtle: rgba(255, 255, 255, 0.04);
-        --border-default: rgba(255, 255, 255, 0.07);
-        --border-hover: rgba(45, 212, 191, 0.2);
-        --border-active: rgba(45, 212, 191, 0.35);
-
-        /* Theme-dependent */
-        --glow-intensity: {glow_intensity};
-        --grid-opacity: {grid_opacity};
-        --border-glow: {border_glow};
-        --text-glow: {text_glow};
-
-        /* Spacing */
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-
-        /* Typography */
-        --font-display: 'DM Sans', -apple-system, sans-serif;
-        --font-body: 'Inter', -apple-system, sans-serif;
-        --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
-    }}
-
-    /* === BASE STYLES === */
-    .stApp {{
-        font-family: var(--font-body);
-        background: var(--bg-void);
-        color: var(--text-secondary);
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }}
-
-    /* Subtle grid (retro mode only) */
-    .stApp::before {{
+    /* --- Accent bar at top of page --- */
+    .stApp::before {
         content: '';
         position: fixed;
-        inset: 0;
-        background:
-            linear-gradient(to bottom, transparent 0%, var(--bg-void) 100%),
-            repeating-linear-gradient(90deg, rgba(45, 212, 191, var(--grid-opacity)) 0px, transparent 1px, transparent 80px),
-            repeating-linear-gradient(0deg, rgba(45, 212, 191, var(--grid-opacity)) 0px, transparent 1px, transparent 80px);
-        pointer-events: none;
-        z-index: 0;
-    }}
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #2dd4bf 0%, #06b6d4 40%, #a78bfa 100%);
+        z-index: 9999;
+    }
 
-    /* Hide Streamlit chrome */
-    #MainMenu {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
-    header[data-testid="stHeader"] {{background: transparent;}}
-    .stDeployButton {{display: none;}}
+    /* --- Base app --- */
+    .stApp, .stApp > div {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        background-color: #09090b !important;
+        color: #a1a1aa;
+        -webkit-font-smoothing: antialiased;
+    }
 
-    /* Main content */
-    .main .block-container {{
-        padding-top: 2rem;
-        padding-bottom: 3rem;
+    /* --- NUKE all Streamlit chrome --- */
+    #MainMenu, footer, .stDeployButton,
+    [data-testid="stToolbar"],
+    [data-testid="stDecoration"],
+    [data-testid="stStatusWidget"],
+    button[title="View app in Streamlit Community Cloud"],
+    .viewerBadge_container__r5tak,
+    .styles_viewerBadge__CvC9N,
+    [data-testid="manage-app-button"] {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        overflow: hidden !important;
+    }
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* --- Main content area --- */
+    .main .block-container {
+        padding: 2.5rem 2.5rem 3rem !important;
         max-width: 1200px;
-        position: relative;
-        z-index: 1;
-    }}
+    }
 
-    /* === TYPOGRAPHY === */
-    h1, h2, h3, h4, h5, h6 {{
-        font-family: var(--font-display);
-        font-weight: 600;
-        letter-spacing: -0.025em;
-        color: var(--text-primary);
-        line-height: 1.2;
-    }}
-
-    h1 {{
-        font-size: 1.75rem;
-        text-shadow: var(--text-glow);
-    }}
-
-    h2 {{ font-size: 1.35rem; }}
-    h3 {{ font-size: 1.1rem; }}
-
-    p, span, label, div {{
-        font-family: var(--font-body);
-    }}
-
-    html {{
-        scroll-behavior: smooth;
-    }}
-
-    /* === SIDEBAR === */
-    [data-testid="stSidebar"] {{
-        background: var(--bg-primary);
-        border-right: 1px solid var(--border-subtle);
-    }}
-
-    [data-testid="stSidebar"] > div:first-child {{
-        padding-top: 1.25rem;
-    }}
-
-    /* === METRIC CARDS === */
-    [data-testid="stMetric"] {{
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-md);
-        padding: 1rem 1.25rem;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }}
-
-    [data-testid="stMetric"]:hover {{
-        border-color: var(--border-hover);
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-    }}
-
-    [data-testid="stMetricLabel"] {{
-        font-family: var(--font-body) !important;
-        font-size: 0.7rem !important;
-        font-weight: 500 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 0.08em !important;
-        color: var(--text-muted) !important;
-        white-space: nowrap !important;
-        overflow: visible !important;
-        text-overflow: unset !important;
-    }}
-
-    [data-testid="stMetricLabel"] > div {{
-        overflow: visible !important;
-        text-overflow: unset !important;
-        white-space: nowrap !important;
-    }}
-
-    [data-testid="stMetricLabel"] > div > div {{
-        overflow: visible !important;
-        text-overflow: unset !important;
-    }}
-
-    [data-testid="stMetricValue"] {{
-        font-family: var(--font-mono) !important;
-        font-size: 1.75rem !important;
+    /* --- Typography — force Inter everywhere --- */
+    h1, h2, h3, h4, h5, h6,
+    p, span, label, div, a, li, td, th, input, textarea, select, button {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+    h1, h2, h3, h4, h5, h6 {
         font-weight: 600 !important;
-        color: var(--text-primary) !important;
-        letter-spacing: -0.02em !important;
-        text-shadow: var(--text-glow);
-    }}
+        color: #f4f4f5 !important;
+        letter-spacing: -0.03em !important;
+    }
+    h1 { font-size: 1.6rem !important; }
+    h2 { font-size: 1.2rem !important; }
+    h3 { font-size: 0.95rem !important; }
 
-    [data-testid="stMetricDelta"] {{
-        font-family: var(--font-mono) !important;
-        font-size: 0.7rem !important;
+    /* ================================================================
+       SIDEBAR — completely restyled
+       ================================================================ */
+    [data-testid="stSidebar"] {
+        background: #0c0c0f !important;
+        border-right: 1px solid rgba(255,255,255,0.06) !important;
+    }
+    [data-testid="stSidebar"] > div:first-child {
+        padding-top: 1.5rem !important;
+    }
+
+    /* Nav items — clean, no emojis (removed via app.py), pill-style active */
+    [data-testid="stSidebarNav"] ul {
+        padding: 0 0.5rem !important;
+    }
+    [data-testid="stSidebarNav"] li {
+        margin-bottom: 1px !important;
+    }
+    [data-testid="stSidebarNav"] li a {
+        font-size: 0.82rem !important;
+        font-weight: 400 !important;
+        color: #71717a !important;
+        padding: 0.45rem 0.85rem !important;
+        border-radius: 8px !important;
+        transition: all 0.15s ease !important;
+        text-decoration: none !important;
+        display: block !important;
+        border-left: 2px solid transparent !important;
+    }
+    [data-testid="stSidebarNav"] li a:hover {
+        color: #d4d4d8 !important;
+        background: rgba(255,255,255,0.03) !important;
+    }
+    [data-testid="stSidebarNav"] li a[aria-current="page"] {
+        color: #f4f4f5 !important;
         font-weight: 500 !important;
-    }}
+        background: rgba(45, 212, 191, 0.06) !important;
+        border-left-color: #2dd4bf !important;
+    }
 
-    [data-testid="stMetricDelta"] svg {{
-        display: none;
-    }}
+    /* Hide the sidebar collapse arrow styling */
+    [data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] {
+        opacity: 0.3;
+        transition: opacity 0.2s;
+    }
+    [data-testid="stSidebar"]:hover [data-testid="stSidebarCollapseButton"] {
+        opacity: 0.7;
+    }
 
-    /* === BUTTONS === */
-    .stButton > button {{
-        font-family: var(--font-body);
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-sm);
-        color: var(--text-primary);
-        font-weight: 500;
-        font-size: 0.8rem;
-        padding: 0.5rem 1rem;
-        transition: all 0.15s ease;
-    }}
+    /* ================================================================
+       METRIC CARDS — bolder, with gradient accent
+       ================================================================ */
+    [data-testid="stMetric"] {
+        background: linear-gradient(135deg, #141419 0%, #111115 100%) !important;
+        border: 1px solid rgba(255,255,255,0.06) !important;
+        border-radius: 12px !important;
+        padding: 1rem 1.15rem !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 1px rgba(255,255,255,0.05) inset !important;
+        transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    }
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.5), 0 0 1px rgba(255,255,255,0.08) inset !important;
+    }
+    [data-testid="stMetricLabel"] {
+        font-size: 0.6rem !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.1em !important;
+        color: #52525b !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+    }
+    [data-testid="stMetricLabel"] > div,
+    [data-testid="stMetricLabel"] > div > div {
+        overflow: visible !important;
+        text-overflow: unset !important;
+        white-space: nowrap !important;
+    }
+    [data-testid="stMetricValue"] {
+        font-family: 'JetBrains Mono', 'SF Mono', monospace !important;
+        font-size: 1.75rem !important;
+        font-weight: 500 !important;
+        color: #f4f4f5 !important;
+        letter-spacing: -0.03em !important;
+    }
+    [data-testid="stMetricDelta"] {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.65rem !important;
+    }
+    [data-testid="stMetricDelta"] svg { display: none; }
 
-    .stButton > button:hover {{
-        background: var(--bg-elevated);
-        border-color: var(--accent-border);
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-    }}
-
-    .stButton > button:active {{
-        transform: scale(0.98);
-    }}
-
+    /* ================================================================
+       BUTTONS
+       ================================================================ */
+    .stButton > button {
+        background: #141419 !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 8px !important;
+        color: #d4d4d8 !important;
+        font-weight: 500 !important;
+        font-size: 0.8rem !important;
+        padding: 0.45rem 1rem !important;
+        transition: all 0.12s ease !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+    }
+    .stButton > button:hover {
+        background: #1c1c23 !important;
+        border-color: rgba(255,255,255,0.12) !important;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.4) !important;
+    }
     .stButton > button[kind="primary"],
-    .stButton > button[data-testid="baseButton-primary"] {{
-        background: var(--accent);
-        border: none;
-        color: #0c0c10;
-        font-weight: 600;
-    }}
+    .stButton > button[data-testid="baseButton-primary"] {
+        background: linear-gradient(135deg, #2dd4bf 0%, #14b8a6 100%) !important;
+        border: none !important;
+        color: #09090b !important;
+        font-weight: 600 !important;
+        box-shadow: 0 2px 12px rgba(45, 212, 191, 0.25) !important;
+    }
+    .stButton > button[kind="primary"]:hover {
+        box-shadow: 0 4px 20px rgba(45, 212, 191, 0.35) !important;
+        filter: brightness(1.05);
+    }
+    .stDownloadButton > button {
+        background: #141419 !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 8px !important;
+        color: #d4d4d8 !important;
+        font-weight: 500 !important;
+        font-size: 0.8rem !important;
+    }
 
-    .stButton > button[kind="primary"]:hover {{
-        box-shadow: 0 4px 20px rgba(45, 212, 191, 0.3);
-        filter: brightness(1.1);
-    }}
-
-    /* Download button */
-    .stDownloadButton > button {{
-        font-family: var(--font-body);
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-sm);
-        color: var(--text-primary);
-        font-weight: 500;
-        font-size: 0.8rem;
-    }}
-
-    .stDownloadButton > button:hover {{
-        border-color: var(--accent-border);
-    }}
-
-    /* === INPUTS === */
+    /* ================================================================
+       INPUTS
+       ================================================================ */
     .stTextInput > div > div,
     .stSelectbox > div > div,
     .stMultiSelect > div > div,
-    .stDateInput > div > div {{
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-sm);
-        font-family: var(--font-body);
-    }}
-
+    .stDateInput > div > div {
+        background: #141419 !important;
+        border: 1px solid rgba(255,255,255,0.06) !important;
+        border-radius: 8px !important;
+    }
     .stTextInput > div > div:focus-within,
-    .stSelectbox > div > div:focus-within {{
-        border-color: var(--accent);
-        box-shadow: 0 0 0 2px var(--accent-soft);
-    }}
+    .stSelectbox > div > div:focus-within {
+        border-color: #2dd4bf !important;
+        box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.12) !important;
+    }
 
-    /* === EXPANDERS === */
-    .streamlit-expanderHeader {{
-        font-family: var(--font-body);
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-sm);
-        font-weight: 500;
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-    }}
+    /* ================================================================
+       EXPANDERS
+       ================================================================ */
+    .streamlit-expanderHeader,
+    [data-testid="stExpander"] summary {
+        background: #141419 !important;
+        border: 1px solid rgba(255,255,255,0.06) !important;
+        border-radius: 8px !important;
+        font-weight: 500 !important;
+        font-size: 0.82rem !important;
+        color: #a1a1aa !important;
+    }
+    .streamlit-expanderContent,
+    [data-testid="stExpander"] [data-testid="stExpanderDetails"] {
+        background: #111115 !important;
+        border: 1px solid rgba(255,255,255,0.04) !important;
+        border-top: none !important;
+        border-radius: 0 0 8px 8px !important;
+    }
 
-    .streamlit-expanderHeader:hover {{
-        border-color: var(--border-hover);
-        color: var(--text-primary);
-    }}
+    /* ================================================================
+       TABS — underline style
+       ================================================================ */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0 !important;
+        background: transparent !important;
+        border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+        border-radius: 0 !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        padding: 0.6rem 1.1rem !important;
+        font-weight: 500 !important;
+        font-size: 0.8rem !important;
+        color: #52525b !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        border-bottom: 2px solid transparent !important;
+        margin-bottom: -1px !important;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #f4f4f5 !important;
+        border-bottom-color: #2dd4bf !important;
+    }
 
-    .streamlit-expanderContent {{
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-top: none;
-        border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-    }}
+    /* ================================================================
+       DATA FRAMES
+       ================================================================ */
+    [data-testid="stDataFrame"] {
+        border-radius: 10px !important;
+        overflow: hidden !important;
+    }
+    [data-testid="stDataFrame"] > div {
+        background: #111115 !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
+        border-radius: 10px !important;
+    }
 
-    /* === TABS === */
-    .stTabs [data-baseweb="tab-list"] {{
-        gap: 2px;
-        background: var(--bg-surface);
-        border-radius: var(--radius-sm);
-        padding: 3px;
-        border: 1px solid var(--border-default);
-    }}
+    /* ================================================================
+       CHAT
+       ================================================================ */
+    .stChatMessage {
+        background: #111115 !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
+        border-radius: 12px !important;
+        padding: 1rem !important;
+    }
+    [data-testid="stChatInput"] > div {
+        background: #141419 !important;
+        border: 1px solid rgba(255,255,255,0.06) !important;
+        border-radius: 12px !important;
+    }
+    [data-testid="stChatInput"] > div:focus-within {
+        border-color: #2dd4bf !important;
+        box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.12) !important;
+    }
 
-    .stTabs [data-baseweb="tab"] {{
-        font-family: var(--font-body);
-        border-radius: 6px;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        background: transparent;
-    }}
+    /* ================================================================
+       FILE UPLOADER
+       ================================================================ */
+    [data-testid="stFileUploader"] > div {
+        background: #111115 !important;
+        border: 1px dashed rgba(255,255,255,0.08) !important;
+        border-radius: 12px !important;
+    }
+    [data-testid="stFileUploader"]:hover > div {
+        border-color: rgba(45, 212, 191, 0.2) !important;
+        background: rgba(45, 212, 191, 0.02) !important;
+    }
 
-    .stTabs [aria-selected="true"] {{
-        background: var(--bg-elevated);
-        color: var(--accent);
-    }}
+    /* ================================================================
+       SLIDERS, TOGGLES, PROGRESS
+       ================================================================ */
+    .stSlider [data-baseweb="slider"] [role="slider"] {
+        background: #2dd4bf !important;
+    }
+    .stSlider > div > div > div {
+        background: #2dd4bf !important;
+    }
+    .stToggle > label > div {
+        background: #25252e !important;
+    }
+    .stProgress > div > div {
+        background: linear-gradient(90deg, #2dd4bf, #06b6d4) !important;
+    }
 
-    /* === DATA FRAMES === */
-    [data-testid="stDataFrame"] {{
-        border-radius: var(--radius-md);
-        overflow: hidden;
-    }}
+    /* ================================================================
+       ALERTS
+       ================================================================ */
+    .stAlert {
+        border-radius: 10px !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
+    }
 
-    [data-testid="stDataFrame"] > div {{
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-md);
-    }}
+    /* ================================================================
+       CODE
+       ================================================================ */
+    code {
+        font-family: 'JetBrains Mono', monospace !important;
+        background: #1c1c23 !important;
+        padding: 0.15rem 0.35rem !important;
+        border-radius: 4px !important;
+        font-size: 0.82em !important;
+        color: #2dd4bf !important;
+    }
 
-    /* === CHAT === */
-    .stChatMessage {{
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-md);
-        padding: 1rem;
-    }}
+    /* ================================================================
+       PLOTLY CHARTS — seamless, modebar hidden until hover
+       ================================================================ */
+    .js-plotly-plot {
+        border-radius: 10px !important;
+    }
+    .js-plotly-plot .modebar {
+        opacity: 0 !important;
+        transition: opacity 0.2s ease !important;
+    }
+    .js-plotly-plot:hover .modebar {
+        opacity: 0.5 !important;
+    }
 
-    [data-testid="stChatInput"] > div {{
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-md);
-    }}
+    /* ================================================================
+       SMALL ELEMENTS
+       ================================================================ */
+    hr {
+        border: none !important;
+        height: 1px !important;
+        background: rgba(255,255,255,0.05) !important;
+        margin: 1.25rem 0 !important;
+    }
+    .stCaption, [data-testid="stCaption"] {
+        font-size: 0.7rem !important;
+        color: #52525b !important;
+    }
+    [data-testid="column"] {
+        padding: 0 0.4rem !important;
+    }
 
-    [data-testid="stChatInput"] > div:focus-within {{
-        border-color: var(--accent);
-        box-shadow: 0 0 0 2px var(--accent-soft);
-    }}
-
-    /* === FILE UPLOADER === */
-    [data-testid="stFileUploader"] > div {{
-        background: var(--bg-surface);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-md);
-    }}
-
-    [data-testid="stFileUploader"]:hover > div {{
-        border-color: var(--accent-border);
-    }}
-
-    /* === SLIDERS === */
-    .stSlider > div > div > div {{
-        background: linear-gradient(90deg, var(--accent), var(--violet));
-    }}
-
-    /* === TOGGLE === */
-    .stToggle > label > div {{
-        background: var(--bg-elevated);
-    }}
-
-    /* === PROGRESS === */
-    .stProgress > div > div {{
-        background: linear-gradient(90deg, var(--accent), var(--sky));
-    }}
-
-    /* === ALERTS === */
-    .stAlert {{
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--border-default);
-    }}
-
-    /* === CODE === */
-    code {{
-        font-family: var(--font-mono);
-        background: var(--bg-elevated);
-        padding: 0.2rem 0.4rem;
-        border-radius: 4px;
-        font-size: 0.85em;
-        color: var(--accent);
-    }}
-
-    /* === DIVIDERS === */
-    hr {{
-        border: none;
-        height: 1px;
-        background: var(--border-default);
-        margin: 1.5rem 0;
-    }}
-
-    /* === PLOTLY CHARTS === */
-    .js-plotly-plot {{
-        border-radius: var(--radius-md);
-    }}
-
-    /* === CAPTIONS === */
-    .stCaption, [data-testid="stCaption"] {{
-        font-family: var(--font-body) !important;
-        font-size: 0.75rem !important;
-        color: var(--text-muted) !important;
-    }}
-
-    /* Reduced motion support */
-    @media (prefers-reduced-motion: reduce) {{
-        *, *::before, *::after {{
-            animation-duration: 0.01ms !important;
-            transition-duration: 0.01ms !important;
-        }}
-    }}
-
-    /* === MOBILE RESPONSIVE === */
-    @media (max-width: 768px) {{
-        .main .block-container {{
-            padding-top: 1rem;
-            padding-bottom: 2rem;
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }}
-
-        h1 {{ font-size: 1.3rem; }}
-        h2 {{ font-size: 1.1rem; }}
-        h3 {{ font-size: 0.95rem; }}
-
-        [data-testid="stMetric"] {{
-            padding: 0.75rem;
-        }}
-
-        [data-testid="stMetricValue"] {{
-            font-size: 1.3rem !important;
-        }}
-
-        [data-testid="stMetricLabel"] {{
-            font-size: 0.6rem !important;
-        }}
-
-        .rm-page-title {{
-            font-size: 1.3rem !important;
-        }}
-
-        .rm-section-header {{
-            font-size: 0.7rem !important;
-        }}
-
-        [data-testid="stSidebar"] {{
-            min-width: 0 !important;
-        }}
-
-        .js-plotly-plot {{
-            overflow-x: auto;
-        }}
-    }}
+    /* ================================================================
+       RESPONSIVE
+       ================================================================ */
+    @media (prefers-reduced-motion: reduce) {
+        * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+    @media (max-width: 768px) {
+        .main .block-container { padding: 1.5rem 1rem 2rem !important; }
+        h1 { font-size: 1.25rem !important; }
+        [data-testid="stMetric"] { padding: 0.65rem !important; }
+        [data-testid="stMetricValue"] { font-size: 1.2rem !important; }
+        [data-testid="stSidebar"] { min-width: 0 !important; }
+        .js-plotly-plot { overflow-x: auto; }
+    }
 </style>
 """
 
 
-def page_header(title: str, subtitle: str = "", theme_mode: str = "minimal") -> str:
-    """Generate HTML for a page header."""
-    is_retro = theme_mode == "retro"
-    title_glow = "text-shadow: 0 0 20px rgba(45, 212, 191, 0.3);" if is_retro else ""
-    subtitle_html = f'<p class="rm-page-subtitle">{subtitle}</p>' if subtitle else ""
+# ---------------------------------------------------------------------------
+# HTML helpers
+# ---------------------------------------------------------------------------
+
+def page_header(title: str, subtitle: str = "") -> str:
+    sub = (
+        f'<p style="color:#52525b;font-size:.82rem;margin:0;font-weight:400;">{subtitle}</p>'
+        if subtitle else ""
+    )
     return (
-        "<style>"
-        ".rm-page-header{margin-bottom:2rem;padding-bottom:1.25rem;"
-        "border-bottom:1px solid rgba(255,255,255,0.06);}"
-        ".rm-page-title{font-family:'DM Sans',sans-serif;font-size:1.6rem;"
-        f"font-weight:700;color:#f0f0f2;margin:0 0 .35rem 0;letter-spacing:-.03em;{title_glow}}}"
-        ".rm-page-subtitle{font-family:'Inter',sans-serif;font-size:.85rem;"
-        "color:#71717a;margin:0;font-weight:400;}"
-        "</style>"
-        f'<div class="rm-page-header"><h1 class="rm-page-title">{title}</h1>'
-        f"{subtitle_html}</div>"
+        f'<div style="margin-bottom:2rem;padding-bottom:1rem;'
+        f'border-bottom:1px solid rgba(255,255,255,0.06);">'
+        f'<h1 style="font-size:1.6rem;font-weight:700;color:#f4f4f5;margin:0 0 .3rem 0;'
+        f'letter-spacing:-.03em;line-height:1.2;">{title}</h1>'
+        f'{sub}</div>'
     )
 
 
-def section_header(title: str, theme_mode: str = "minimal") -> str:
-    """Generate HTML for a section header."""
-    is_retro = theme_mode == "retro"
-    accent = "background:linear-gradient(90deg,#2dd4bf,transparent);" if is_retro else "background:rgba(45,212,191,0.5);"
+def section_header(title: str) -> str:
     return (
-        "<style>"
-        ".rm-section-header{font-family:'DM Sans',sans-serif;font-size:.8rem;"
-        "font-weight:600;color:#a1a1aa;margin:2.5rem 0 1rem 0;padding-bottom:.6rem;"
-        "letter-spacing:.02em;border-bottom:1px solid rgba(255,255,255,0.06);"
-        "position:relative;}"
-        f".rm-section-header::after{{content:'';position:absolute;bottom:-1px;left:0;"
-        f"width:40px;height:2px;{accent}border-radius:1px;}}"
-        "</style>"
-        f'<h3 class="rm-section-header">{title}</h3>'
+        f'<div style="display:flex;align-items:center;gap:.5rem;margin:2rem 0 .75rem 0;'
+        f'padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,0.05);">'
+        f'<div style="width:3px;height:14px;border-radius:2px;'
+        f'background:linear-gradient(180deg,#2dd4bf,#06b6d4);flex-shrink:0;"></div>'
+        f'<span style="font-size:.7rem;font-weight:600;color:#71717a;'
+        f'letter-spacing:.08em;text-transform:uppercase;">{title}</span></div>'
     )
 
 
-def metric_card(label: str, value: str, delta: str = "", status: str = "", theme_mode: str = "minimal") -> str:
-    """Generate HTML for a metric card with monospace numbers."""
-    is_retro = theme_mode == "retro"
-    status_colors = {"good": "#34d399", "warning": "#fbbf24", "bad": "#f87171", "": "#f0f0f2"}
-    value_color = status_colors.get(status, "#f0f0f2")
-    border_style = "border-color:rgba(45,212,191,0.15);" if is_retro else ""
-    value_glow = f"text-shadow:0 0 12px {value_color}40;" if is_retro else ""
-    delta_html = f'<div style="font-size:.7rem;color:#a1a1aa;margin-top:.25rem;">{delta}</div>' if delta else ""
-    outer = f"background:#16161c;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1rem 1.25rem;{border_style}"
-    label_s = "font-family:'Inter',sans-serif;font-size:.65rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#71717a;margin-bottom:.4rem;"
-    value_s = f"font-family:'JetBrains Mono',monospace;font-size:1.75rem;font-weight:600;color:{value_color};letter-spacing:-.02em;line-height:1.1;{value_glow}"
-    return f'<div style="{outer}"><div style="{label_s}">{label}</div><div style="{value_s}">{value}</div>{delta_html}</div>'
-
-
-def info_card(text: str, theme_mode: str = "minimal") -> str:
-    """Generate HTML for an info card."""
-    outer = "background:rgba(45,212,191,0.04);border:1px solid rgba(45,212,191,0.12);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:.75rem;"
-    text_s = "font-family:'Inter',sans-serif;color:#a1a1aa;font-size:.85rem;line-height:1.5;"
-    return f'<div style="{outer}"><span style="color:#2dd4bf;font-size:.9rem;flex-shrink:0;margin-top:1px;">i</span><span style="{text_s}">{text}</span></div>'
-
-
-def success_card(text: str, theme_mode: str = "minimal") -> str:
-    """Generate HTML for a success card."""
-    outer = "background:rgba(52,211,153,0.04);border:1px solid rgba(52,211,153,0.15);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;"
-    text_s = "font-family:'Inter',sans-serif;color:#a1a1aa;font-size:.85rem;"
-    return f'<div style="{outer}"><span style="color:#34d399;font-size:.9rem;">&#10003;</span><span style="{text_s}">{text}</span></div>'
-
-
-def warning_card(text: str, theme_mode: str = "minimal") -> str:
-    """Generate HTML for a warning card."""
-    outer = "background:rgba(251,191,36,0.04);border:1px solid rgba(251,191,36,0.15);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;"
-    text_s = "font-family:'Inter',sans-serif;color:#a1a1aa;font-size:.85rem;"
-    return f'<div style="{outer}"><span style="color:#fbbf24;font-size:.9rem;">&#9888;</span><span style="{text_s}">{text}</span></div>'
-
-
-def empty_state(title: str, description: str, icon: str = "&#9671;", theme_mode: str = "minimal") -> str:
-    """Generate HTML for an empty state."""
-    is_retro = theme_mode == "retro"
-    icon_glow = "text-shadow:0 0 20px rgba(45,212,191,0.3);" if is_retro else ""
-    outer = "text-align:center;padding:4rem 2rem;background:#16161c;border:1px solid rgba(255,255,255,0.06);border-radius:16px;"
-    icon_s = f"font-size:2.5rem;margin-bottom:1.25rem;color:#2dd4bf;opacity:.35;{icon_glow}"
-    title_s = "font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;color:#f0f0f2;margin-bottom:.4rem;"
-    desc_s = "font-family:'Inter',sans-serif;font-size:.85rem;color:#71717a;max-width:320px;margin:0 auto;line-height:1.5;"
+def metric_card(label: str, value: str, delta: str = "", status: str = "") -> str:
+    colors = {"good": "#34d399", "warning": "#fbbf24", "bad": "#f87171", "": "#f4f4f5"}
+    vc = colors.get(status, "#f4f4f5")
+    d = f'<div style="font-size:.65rem;color:#52525b;margin-top:.2rem;">{delta}</div>' if delta else ""
     return (
-        f'<div style="{outer}">'
-        f'<div style="{icon_s}">{icon}</div>'
-        f'<div style="{title_s}">{title}</div>'
-        f'<div style="{desc_s}">{description}</div>'
+        f'<div style="background:linear-gradient(135deg,#141419,#111115);'
+        f'border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:1rem 1.1rem;'
+        f'box-shadow:0 2px 8px rgba(0,0,0,0.4);">'
+        f'<div style="font-size:.58rem;font-weight:600;text-transform:uppercase;'
+        f'letter-spacing:.1em;color:#52525b;margin-bottom:.4rem;">{label}</div>'
+        f'<div style="font-family:\'JetBrains Mono\',monospace;font-size:1.75rem;font-weight:500;'
+        f'color:{vc};letter-spacing:-.03em;line-height:1.1;">{value}</div>'
+        f'{d}</div>'
+    )
+
+
+def info_card(text: str) -> str:
+    return (
+        f'<div style="background:rgba(45,212,191,0.03);border-left:3px solid #2dd4bf;'
+        f'border-radius:0 10px 10px 0;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;">'
+        f'<span style="color:#a1a1aa;font-size:.82rem;line-height:1.5;">{text}</span></div>'
+    )
+
+
+def success_card(text: str) -> str:
+    return (
+        f'<div style="background:rgba(52,211,153,0.03);border-left:3px solid #34d399;'
+        f'border-radius:0 10px 10px 0;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;">'
+        f'<span style="color:#a1a1aa;font-size:.82rem;">{text}</span></div>'
+    )
+
+
+def warning_card(text: str) -> str:
+    return (
+        f'<div style="background:rgba(251,191,36,0.03);border-left:3px solid #fbbf24;'
+        f'border-radius:0 10px 10px 0;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;">'
+        f'<span style="color:#a1a1aa;font-size:.82rem;">{text}</span></div>'
+    )
+
+
+def empty_state(title: str, description: str, icon: str = "&#9671;") -> str:
+    return (
+        f'<div style="text-align:center;padding:3.5rem 2rem;'
+        f'background:linear-gradient(135deg,#111115,#0e0e12);'
+        f'border:1px solid rgba(255,255,255,0.04);border-radius:16px;'
+        f'box-shadow:0 4px 16px rgba(0,0,0,0.3);">'
+        f'<div style="font-size:1.5rem;margin-bottom:.75rem;color:#3f3f46;opacity:.6;">{icon}</div>'
+        f'<div style="font-size:.95rem;font-weight:600;color:#f4f4f5;margin-bottom:.3rem;">{title}</div>'
+        f'<div style="font-size:.8rem;color:#52525b;max-width:300px;margin:0 auto;line-height:1.5;">{description}</div>'
         f'</div>'
     )
 
 
-def neon_badge(text: str, color: str = "cyan", theme_mode: str = "minimal") -> str:
-    """Generate HTML for a badge/pill."""
-    colors = {
-        "cyan": ("#2dd4bf", "rgba(45, 212, 191, 0.08)", "rgba(45, 212, 191, 0.2)"),
-        "magenta": ("#fb7185", "rgba(251, 113, 133, 0.08)", "rgba(251, 113, 133, 0.2)"),
-        "amber": ("#fbbf24", "rgba(251, 191, 36, 0.08)", "rgba(251, 191, 36, 0.2)"),
-        "green": ("#34d399", "rgba(52, 211, 153, 0.08)", "rgba(52, 211, 153, 0.2)"),
+def neon_badge(text: str, color: str = "cyan") -> str:
+    palette = {
+        "cyan": ("#2dd4bf", "rgba(45,212,191,0.06)", "rgba(45,212,191,0.15)"),
+        "magenta": ("#fb7185", "rgba(251,113,133,0.06)", "rgba(251,113,133,0.15)"),
+        "amber": ("#fbbf24", "rgba(251,191,36,0.06)", "rgba(251,191,36,0.15)"),
+        "green": ("#34d399", "rgba(52,211,153,0.06)", "rgba(52,211,153,0.15)"),
     }
-    fg, bg, border = colors.get(color, colors["cyan"])
-    style = (
-        "font-family: 'Inter', sans-serif;"
-        f"background: {bg};"
-        f"color: {fg};"
-        f"border: 1px solid {border};"
-        "padding: 0.2rem 0.65rem;"
-        "border-radius: 6px;"
-        "font-size: 0.7rem;"
-        "font-weight: 500;"
-        "display: inline-block;"
-        "letter-spacing: 0.01em;"
+    fg, bg, bd = palette.get(color, palette["cyan"])
+    return (
+        f'<span style="background:{bg};color:{fg};border:1px solid {bd};'
+        f'padding:.2rem .6rem;border-radius:5px;font-size:.65rem;font-weight:500;'
+        f'display:inline-block;letter-spacing:.02em;">{text}</span>'
     )
-    return f'<span style="{style}">{text}</span>'
 
 
-def theme_toggle_html() -> str:
-    """Generate HTML for the theme toggle display."""
-    s = "font-family:'Inter',sans-serif;font-size:.65rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#52525b;margin-bottom:.5rem;"
-    return f'<p style="{s}">Theme</p>'
-
-
-def sidebar_title(theme_mode: str = "minimal") -> str:
-    """Generate HTML for sidebar title."""
-    is_retro = theme_mode == "retro"
-    accent_style = (
-        "background:linear-gradient(135deg,#2dd4bf,#a78bfa);"
-        "-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"
-    ) if is_retro else "color:#f0f0f2;"
-    outer = "margin-bottom:1.25rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,0.06);"
-    oura_s = f"font-family:'DM Sans',sans-serif;font-size:1.15rem;font-weight:700;letter-spacing:-.02em;{accent_style}"
-    health_s = "font-family:'DM Sans',sans-serif;font-size:1.15rem;font-weight:400;color:#52525b;letter-spacing:-.02em;"
-    return f'<div style="{outer}"><span style="{oura_s}">Oura</span><span style="{health_s}"> Health</span></div>'
+def sidebar_title() -> str:
+    return (
+        '<div style="margin:0 .85rem .85rem;padding-bottom:.6rem;'
+        'border-bottom:1px solid rgba(255,255,255,0.06);">'
+        '<span style="font-size:1.05rem;font-weight:700;color:#f4f4f5;letter-spacing:-.02em;">Oura</span>'
+        '<span style="font-size:1.05rem;font-weight:300;color:#3f3f46;letter-spacing:-.02em;"> Health</span>'
+        '</div>'
+    )
 
 
 def sidebar_label(text: str) -> str:
-    """Generate HTML for a sidebar section label."""
-    s = "font-family:'Inter',sans-serif;font-size:.65rem;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#52525b;margin-bottom:.4rem;margin-top:0;"
-    return f'<p style="{s}">{text}</p>'
+    return (
+        f'<p style="font-size:.6rem;font-weight:600;text-transform:uppercase;'
+        f'letter-spacing:.1em;color:#3f3f46;margin:0 0 .25rem 0;">{text}</p>'
+    )
 
 
-def mode_indicator(is_sandbox: bool, theme_mode: str = "minimal") -> str:
-    """Generate HTML for sandbox/demo mode indicator."""
+def mode_indicator(is_sandbox: bool) -> str:
     if not is_sandbox:
         return ""
-    s = "background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.15);border-radius:8px;padding:.4rem .65rem;margin-bottom:1.25rem;font-family:'Inter',sans-serif;font-size:.7rem;font-weight:500;color:#fbbf24;letter-spacing:.02em;"
-    return f'<div style="{s}">Demo Mode</div>'
+    return (
+        '<div style="background:rgba(45,212,191,0.04);border:1px solid rgba(45,212,191,0.1);'
+        'border-radius:6px;padding:.25rem .6rem;margin-bottom:.75rem;'
+        'font-size:.62rem;font-weight:500;color:#2dd4bf;letter-spacing:.02em;">'
+        'Sandbox Mode</div>'
+    )
 
 
-# Backwards compatibility aliases
+# Backwards compatibility
 def main_header(title: str, subtitle: str = "") -> str:
     return page_header(title, subtitle)
-
 
 def info_box(text: str) -> str:
     return info_card(text)
 
-
 def success_box(text: str) -> str:
     return success_card(text)
-
 
 def warning_box(text: str) -> str:
     return warning_card(text)
 
-
 def feature_badge(text: str, color: str = "cyan") -> str:
     return neon_badge(text, color)
 
-
 def stat_card(label: str, value: str, delta: str = "", status: str = "") -> str:
     return metric_card(label, value, delta, status)
+
+def theme_toggle_html() -> str:
+    return ""

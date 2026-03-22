@@ -28,8 +28,7 @@ from styles import (
     info_card,
 )
 
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
@@ -37,7 +36,7 @@ start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
 st.markdown(
-    page_header("Correlations", "Discover relationships between your health metrics", theme_mode),
+    page_header("Correlations", "Discover relationships between your health metrics"),
     unsafe_allow_html=True
 )
 
@@ -45,7 +44,7 @@ daily = get_all_daily_data_with_imported(token, start, end, sandbox)
 
 if daily.empty:
     st.markdown(
-        info_card("No data available. Try expanding the date range or enabling demo mode.", theme_mode),
+        info_card("No data available. Try expanding the date range or enabling demo mode."),
         unsafe_allow_html=True
     )
     st.stop()
@@ -57,7 +56,7 @@ if len(numeric_cols) < 2:
     st.warning("Not enough numeric data for correlations.")
     st.stop()
 
-st.markdown(section_header("Metric Pair Analysis", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Metric Pair Analysis"), unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
 with col1:
@@ -85,7 +84,7 @@ if len(pair_df) >= 3:
     direction = "positive" if corr_val > 0 else "negative"
     
     color = "#34d399" if abs(corr_val) > CORRELATION_STRONG else "#fbbf24" if abs(corr_val) > CORRELATION_MODERATE else "#71717a"
-    outer = f"background:#16161c;border-left:3px solid {color};border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:.5rem 0;font-family:Inter,-apple-system,sans-serif;"
+    outer = f"background:#18181d;border-left:3px solid {color};border-radius:0 8px 8px 0;padding:.85rem 1rem;margin:.5rem 0;font-family:Inter,-apple-system,sans-serif;"
     st.markdown(
         f'<div style="{outer}">'
         f'<span style="font-family:\'JetBrains Mono\',monospace;color:#f0f0f2;font-weight:600;">r = {corr_val:.3f}</span>'
@@ -96,7 +95,7 @@ if len(pair_df) >= 3:
 else:
     st.warning("Not enough overlapping data points for these metrics.")
 
-st.markdown(section_header("Correlation Matrix", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Correlation Matrix"), unsafe_allow_html=True)
 matrix_cols = st.multiselect(
     "Select metrics",
     numeric_cols,
@@ -108,7 +107,7 @@ if len(matrix_cols) >= 2:
     fig = correlation_matrix(daily, matrix_cols)
     st.plotly_chart(fig, use_container_width=True)
 
-st.markdown(section_header("Time-Lagged Correlations", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Time-Lagged Correlations"), unsafe_allow_html=True)
 st.caption("Does metric X today predict metric Y tomorrow?")
 
 col1, col2, col3 = st.columns(3)
@@ -129,7 +128,7 @@ for lag in range(-max_lag, max_lag + 1):
 
 if lag_results:
     lag_df = pd.DataFrame(lag_results)
-    colorscale = [[0, THEME_SECONDARY], [0.5, "#16161c"], [1, THEME_PRIMARY]]
+    colorscale = [[0, THEME_SECONDARY], [0.5, "#09090b"], [1, THEME_PRIMARY]]
     fig = px.bar(
         lag_df, x="lag", y="correlation",
         labels={"lag": "Lag (days)", "correlation": "Pearson r"},
@@ -161,7 +160,7 @@ if lag_results:
 else:
     st.warning("Not enough data for time-lagged analysis.")
 
-st.markdown(section_header("Lab Biomarker Correlations", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Lab Biomarker Correlations"), unsafe_allow_html=True)
 
 labs_start = str(date.today() - timedelta(days=365))
 labs_end = str(date.today())
@@ -169,14 +168,14 @@ labs = get_lab_results_df(DATA_DIR_ABSOLUTE, labs_start, labs_end)
 
 if labs.empty:
     st.markdown(
-        info_card("No lab results imported. Upload blood panel PDFs on the Import page.", theme_mode),
+        info_card("No lab results imported. Upload blood panel PDFs on the Import page."),
         unsafe_allow_html=True
     )
 else:
     test_names = sorted(labs["test_name"].unique().tolist())
     if len(test_names) == 0:
         st.markdown(
-            info_card("No biomarkers found in lab results.", theme_mode),
+            info_card("No biomarkers found in lab results."),
             unsafe_allow_html=True
         )
     else:
@@ -197,7 +196,7 @@ else:
 
             if bio_df.empty or len(bio_df) < 2:
                 st.markdown(
-                    info_card(f"Need at least 2 data points for {selected_biomarker}.", theme_mode),
+                    info_card(f"Need at least 2 data points for {selected_biomarker}."),
                     unsafe_allow_html=True
                 )
             else:
@@ -218,7 +217,7 @@ else:
 
                 if len(corr_data) < 2:
                     st.markdown(
-                        info_card("Not enough overlapping Oura data around lab draws.", theme_mode),
+                        info_card("Not enough overlapping Oura data around lab draws."),
                         unsafe_allow_html=True
                     )
                 else:
@@ -227,7 +226,7 @@ else:
 
                     if not avail_metrics:
                         st.markdown(
-                            info_card("No Oura metrics have enough data points.", theme_mode),
+                            info_card("No Oura metrics have enough data points."),
                             unsafe_allow_html=True
                         )
                     else:

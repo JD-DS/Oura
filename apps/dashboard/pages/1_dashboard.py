@@ -7,9 +7,7 @@ from components.data import get_all_daily_data
 from components.charts import sparkline, calendar_heatmap
 from styles import get_custom_css, page_header, section_header, empty_state
 
-# Get theme mode from session state
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
@@ -17,7 +15,7 @@ start = st.session_state.get("start_date", str(default_start_date()))
 end = st.session_state.get("end_date", str(default_end_date()))
 
 st.markdown(
-    page_header("Overview", "Your health at a glance", theme_mode),
+    page_header("Overview", "Your health at a glance"),
     unsafe_allow_html=True
 )
 
@@ -29,7 +27,6 @@ if daily.empty:
             "No data available",
             "Try expanding the date range or enable demo mode in the sidebar.",
             "◇",
-            theme_mode
         ),
         unsafe_allow_html=True
     )
@@ -40,9 +37,9 @@ latest = daily.iloc[-1] if not daily.empty else {}
 # Key metrics row
 cols = st.columns(5)
 
-stress_val = latest.get("stress_summary", "—")
-if isinstance(stress_val, str) and len(stress_val) > 8:
-    stress_val = stress_val[:8].rstrip()
+_stress_raw = latest.get("stress_summary", "—")
+_stress_map = {"restored": "Good", "normal": "Normal", "stressful": "High"}
+stress_val = _stress_map.get(_stress_raw, _stress_raw) if isinstance(_stress_raw, str) else _stress_raw
 
 metrics = [
     ("Sleep", latest.get("sleep_score"), ""),
@@ -57,7 +54,7 @@ for i, (label, value, suffix) in enumerate(metrics):
         display_value = value if value is not None else "—"
         st.metric(label, display_value)
 
-st.markdown(section_header("Weekly Trends", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Weekly Trends"), unsafe_allow_html=True)
 
 recent = daily.tail(7)
 spark_cols = st.columns(5)
@@ -82,7 +79,7 @@ for i, (col_name, label) in enumerate(trend_metrics):
         else:
             st.caption("—")
 
-st.markdown(section_header("Readiness Calendar", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Readiness Calendar"), unsafe_allow_html=True)
 
 if "readiness_score" in daily.columns:
     fig = calendar_heatmap(

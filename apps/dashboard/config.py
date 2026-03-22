@@ -67,13 +67,12 @@ DATA_DIR_ABSOLUTE = str(_PROJECT_ROOT / DATA_DIR) if not Path(DATA_DIR).is_absol
 CHART_TEMPLATE = _env("CHART_TEMPLATE", "plotly_dark")
 
 # Primary accent colors
-THEME_PRIMARY = _env("THEME_PRIMARY", "#2dd4bf")   # Teal
-THEME_SECONDARY = _env("THEME_SECONDARY", "#a78bfa")  # Violet
-THEME_TERTIARY = _env("THEME_TERTIARY", "#fbbf24")  # Amber
+THEME_PRIMARY = _env("THEME_PRIMARY", "#2dd4bf")
+THEME_SECONDARY = _env("THEME_SECONDARY", "#a78bfa")
+THEME_TERTIARY = _env("THEME_TERTIARY", "#fbbf24")
 
-# Background colors for charts
-CHART_BG = _env("CHART_BG", "#0c0c10")
-CHART_PAPER_BG = _env("CHART_PAPER_BG", "#16161c")
+CHART_BG = _env("CHART_BG", "rgba(0,0,0,0)")
+CHART_PAPER_BG = _env("CHART_PAPER_BG", "rgba(0,0,0,0)")
 CHART_GRID_COLOR = _env("CHART_GRID_COLOR", "rgba(255, 255, 255, 0.04)")
 
 SLEEP_STAGE_COLORS = {

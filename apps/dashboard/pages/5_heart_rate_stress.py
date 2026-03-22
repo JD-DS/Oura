@@ -24,8 +24,7 @@ from styles import (
     info_card,
 )
 
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 token = st.session_state.get("access_token", "")
 sandbox = st.session_state.get("sandbox_mode", False)
@@ -36,7 +35,6 @@ st.markdown(
     page_header(
         "Heart & Stress",
         "Monitor your cardiovascular health, stress levels, and recovery patterns",
-        theme_mode
     ),
     unsafe_allow_html=True
 )
@@ -64,7 +62,7 @@ with cols[2]:
 with cols[3]:
     st.metric("Resilience", resilience.title() if pd.notna(resilience) else "—")
 
-st.markdown(section_header("Heart Rate Time Series", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Heart Rate Time Series"), unsafe_allow_html=True)
 st.caption("Select a narrower date range for detailed HR data")
 
 hr_start = f"{start}T00:00:00"
@@ -94,7 +92,7 @@ if not hr_df.empty:
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown(section_header("HR by Source", theme_mode), unsafe_allow_html=True)
+        st.markdown(section_header("HR by Source"), unsafe_allow_html=True)
         fig = px.box(
             hr_df, x="source", y="bpm", color="source",
             color_discrete_sequence=CHART_COLOR_SEQUENCE,
@@ -111,7 +109,7 @@ if not hr_df.empty:
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        st.markdown(section_header("Resting HR Trend", theme_mode), unsafe_allow_html=True)
+        st.markdown(section_header("Resting HR Trend"), unsafe_allow_html=True)
         if not sleep_df.empty:
             rhr_df = sleep_df.dropna(subset=["lowest_hr"])
             if not rhr_df.empty:
@@ -119,11 +117,11 @@ if not hr_df.empty:
                 st.plotly_chart(fig, use_container_width=True)
 else:
     st.markdown(
-        info_card("No heart rate data available for the selected date range.", theme_mode),
+        info_card("No heart rate data available for the selected date range."),
         unsafe_allow_html=True
     )
 
-st.markdown(section_header("Daily Stress & Recovery", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Daily Stress & Recovery"), unsafe_allow_html=True)
 
 if not stress_df.empty:
     has_data = stress_df[["stress_min", "recovery_min"]].notna().any().any()
@@ -139,7 +137,7 @@ if not stress_df.empty:
     if not summary_counts.empty:
         col1, col2 = st.columns(2)
         with col1:
-            st.markdown(section_header("Stress Distribution", theme_mode), unsafe_allow_html=True)
+            st.markdown(section_header("Stress Distribution"), unsafe_allow_html=True)
             fig = pie_chart(
                 summary_counts.index.tolist(), summary_counts.values.tolist(),
                 "", colors=STRESS_COLORS,
@@ -147,16 +145,16 @@ if not stress_df.empty:
             st.plotly_chart(fig, use_container_width=True)
 
         with col2:
-            st.markdown(section_header("Summary Stats", theme_mode), unsafe_allow_html=True)
+            st.markdown(section_header("Summary Stats"), unsafe_allow_html=True)
             stats_df = stress_df.groupby("stress_summary")[["stress_min", "recovery_min"]].mean().round(1)
             st.dataframe(stats_df, use_container_width=True)
 else:
     st.markdown(
-        info_card("No stress data available for the selected date range.", theme_mode),
+        info_card("No stress data available for the selected date range."),
         unsafe_allow_html=True
     )
 
-st.markdown(section_header("Resilience Timeline", theme_mode), unsafe_allow_html=True)
+st.markdown(section_header("Resilience Timeline"), unsafe_allow_html=True)
 
 if not res_df.empty:
     level_order = ["limited", "adequate", "solid", "strong", "exceptional"]
@@ -193,6 +191,6 @@ if not res_df.empty:
         st.plotly_chart(fig, use_container_width=True)
 else:
     st.markdown(
-        info_card("No resilience data available for the selected date range.", theme_mode),
+        info_card("No resilience data available for the selected date range."),
         unsafe_allow_html=True
     )

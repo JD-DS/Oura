@@ -24,14 +24,13 @@ from styles import (
     success_card,
 )
 
-theme_mode = st.session_state.get("theme_mode", "minimal")
-st.markdown(get_custom_css(theme_mode), unsafe_allow_html=True)
+st.markdown(get_custom_css(), unsafe_allow_html=True)
 
 start = st.session_state.get("start_date", "")
 end = st.session_state.get("end_date", "")
 
 st.markdown(
-    page_header("Import", "Upload external health data", theme_mode),
+    page_header("Import", "Upload external health data"),
     unsafe_allow_html=True
 )
 
@@ -40,7 +39,7 @@ st.caption(f"Storage: `{DATA_DIR_ABSOLUTE}`")
 tab1, tab2, tab3 = st.tabs(["Activity Data", "Lab Results", "View Imported"])
 
 with tab1:
-    st.markdown(section_header("Excel / CSV Upload", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("Excel / CSV Upload"), unsafe_allow_html=True)
     st.caption("Upload activity/nutrition data (date, steps, calories, workouts)")
     
     uploaded = st.file_uploader(
@@ -58,7 +57,7 @@ with tab1:
                 st.warning(e)
         if not df.empty:
             st.markdown(
-                success_card(f"Parsed {len(df)} rows ({df['date'].min()} to {df['date'].max()})", theme_mode),
+                success_card(f"Parsed {len(df)} rows ({df['date'].min()} to {df['date'].max()})"),
                 unsafe_allow_html=True
             )
             st.dataframe(df.head(20), use_container_width=True, hide_index=True)
@@ -72,7 +71,7 @@ with tab1:
                     st.error(str(e))
 
 with tab2:
-    st.markdown(section_header("Lab PDF Upload", theme_mode), unsafe_allow_html=True)
+    st.markdown(section_header("Lab PDF Upload"), unsafe_allow_html=True)
     st.caption("Upload blood panel PDFs (table layout supported)")
     
     pdf_uploaded = st.file_uploader(
@@ -92,7 +91,7 @@ with tab2:
                 st.warning(e)
         if results:
             st.markdown(
-                success_card(f"Extracted {len(results)} results", theme_mode),
+                success_card(f"Extracted {len(results)} results"),
                 unsafe_allow_html=True
             )
             preview = pd.DataFrame(results)
@@ -107,18 +106,18 @@ with tab2:
                     st.error(str(e))
         elif not errors:
             st.markdown(
-                info_card("No results extracted. Try a different PDF or check the format.", theme_mode),
+                info_card("No results extracted. Try a different PDF or check the format."),
                 unsafe_allow_html=True
             )
 
 with tab3:
     if start and end:
-        st.markdown(section_header("Activity Data", theme_mode), unsafe_allow_html=True)
+        st.markdown(section_header("Activity Data"), unsafe_allow_html=True)
         try:
             imported = query_activity(DATA_DIR_ABSOLUTE, start, end)
             if imported.empty:
                 st.markdown(
-                    info_card("No imported activity data for this range.", theme_mode),
+                    info_card("No imported activity data for this range."),
                     unsafe_allow_html=True
                 )
             else:
@@ -126,12 +125,12 @@ with tab3:
         except Exception as e:
             st.error(str(e))
         
-        st.markdown(section_header("Lab Results", theme_mode), unsafe_allow_html=True)
+        st.markdown(section_header("Lab Results"), unsafe_allow_html=True)
         try:
             labs = query_lab_results(DATA_DIR_ABSOLUTE, start, end)
             if labs.empty:
                 st.markdown(
-                    info_card("No lab results for this range.", theme_mode),
+                    info_card("No lab results for this range."),
                     unsafe_allow_html=True
                 )
             else:
@@ -140,6 +139,6 @@ with tab3:
             st.error(str(e))
     else:
         st.markdown(
-            info_card("Select a date range in the sidebar to view imported data.", theme_mode),
+            info_card("Select a date range in the sidebar to view imported data."),
             unsafe_allow_html=True
         )
