@@ -7,7 +7,7 @@ def get_custom_css() -> str:
     """Return the dashboard CSS."""
     return """
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Material+Symbols+Rounded&display=swap');
 
     /* ================================================================
        AGGRESSIVE OVERRIDES — these must beat Streamlit's defaults
