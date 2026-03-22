@@ -196,19 +196,53 @@ _SIDEBAR_TOGGLE_JS = """
 
     doc.body.appendChild(btn);
 
-    // Observe all attribute changes on the entire document to catch sidebar state
+    // --- Fix broken Material icon text everywhere ---
+    var iconMap = {
+        'keyboard_double_arrow_left': '\u2039',
+        'keyboard_double_arrow_right': '\u203A',
+        'keyboard_arrow_right': '\u25B8',
+        'keyboard_arrow_down': '\u25BE',
+        'keyboard_arrow_left': '\u2039',
+        'keyboard_arrow_up': '\u25B4',
+        'expand_more': '\u25BE',
+        'expand_less': '\u25B4',
+        'chevron_right': '\u203A',
+        'chevron_left': '\u2039',
+        'close': '\u00D7',
+        'menu': '\u2630'
+    };
+
+    function fixIcons() {
+        var walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, null, false);
+        var node;
+        while (node = walker.nextNode()) {
+            var txt = node.textContent.trim();
+            if (iconMap[txt]) {
+                var el = node.parentElement;
+                if (el && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE') {
+                    el.textContent = iconMap[txt];
+                    el.style.fontFamily = 'Inter, system-ui, sans-serif';
+                    el.style.fontSize = txt.indexOf('double') >= 0 ? '18px' : '14px';
+                    el.style.lineHeight = '1';
+                }
+            }
+        }
+    }
+
+    // Observe all changes to catch sidebar state and fix icons
     var observer = new MutationObserver(function(mutations) {
+        var needIconFix = false;
         for (var i = 0; i < mutations.length; i++) {
             var m = mutations[i];
             if (m.type === 'attributes' && m.attributeName === 'aria-expanded') {
                 updateVisibility();
-                return;
             }
-            if (m.type === 'childList') {
+            if (m.type === 'childList' && m.addedNodes.length > 0) {
                 updateVisibility();
-                return;
+                needIconFix = true;
             }
         }
+        if (needIconFix) fixIcons();
     });
     observer.observe(doc.body, {
         childList: true,
@@ -217,11 +251,13 @@ _SIDEBAR_TOGGLE_JS = """
         attributeFilter: ['aria-expanded']
     });
 
-    // Initial check with retry for late DOM mount
+    // Initial runs with retries for late DOM mount
     updateVisibility();
-    setTimeout(updateVisibility, 500);
-    setTimeout(updateVisibility, 1500);
-    setTimeout(updateVisibility, 3000);
+    fixIcons();
+    setTimeout(function() { updateVisibility(); fixIcons(); }, 500);
+    setTimeout(function() { updateVisibility(); fixIcons(); }, 1500);
+    setTimeout(function() { updateVisibility(); fixIcons(); }, 3000);
+    setTimeout(fixIcons, 5000);
 })();
 </script>
 """
