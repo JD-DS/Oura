@@ -8,7 +8,6 @@ import sys
 import os
 
 import streamlit as st
-from streamlit.components.v1 import html as _components_html
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 sys.path.insert(0, os.path.dirname(__file__))
@@ -127,70 +126,6 @@ with st.sidebar:
         if st.button("Sign out", use_container_width=True):
             logout()
             st.rerun()
-
-# --- Sidebar toggle ---
-
-_SIDEBAR_TOGGLE_JS = """
-<script>
-(function() {
-    var doc = window.parent.document;
-    if (doc.getElementById('sidebar-toggle-btn')) return;
-
-    var btn = doc.createElement('button');
-    btn.id = 'sidebar-toggle-btn';
-    btn.innerHTML = '&#9776;';
-    btn.title = 'Toggle sidebar';
-    btn.style.cssText = [
-        'position:fixed', 'top:14px', 'left:14px', 'z-index:1000002',
-        'width:42px', 'height:42px',
-        'background:rgba(12,12,15,0.95)',
-        'border:1px solid rgba(255,255,255,0.12)',
-        'border-radius:10px', 'cursor:pointer',
-        'color:#a1a1aa', 'font-size:20px',
-        'backdrop-filter:blur(12px)', '-webkit-backdrop-filter:blur(12px)',
-        'box-shadow:0 4px 16px rgba(0,0,0,0.6)',
-        'display:flex', 'align-items:center', 'justify-content:center',
-        'transition:all .15s ease', 'padding:0', 'line-height:1',
-        'font-family:system-ui,sans-serif', 'pointer-events:auto'
-    ].join(';');
-
-    btn.onmouseover = function() {
-        btn.style.background = 'rgba(20,20,25,0.95)';
-        btn.style.color = '#2dd4bf';
-        btn.style.borderColor = 'rgba(45,212,191,0.3)';
-    };
-    btn.onmouseout = function() {
-        btn.style.background = 'rgba(12,12,15,0.95)';
-        btn.style.color = '#a1a1aa';
-        btn.style.borderColor = 'rgba(255,255,255,0.12)';
-    };
-
-    function updateVisibility() {
-        var sidebar = doc.querySelector('[data-testid="stSidebar"]');
-        if (!sidebar) { btn.style.display = 'flex'; return; }
-        var expanded = sidebar.getAttribute('aria-expanded');
-        btn.style.display = (expanded === 'true') ? 'none' : 'flex';
-    }
-
-    btn.onclick = function() {
-        var collapse = doc.querySelector('[data-testid="stSidebarCollapseButton"] button');
-        var expand = doc.querySelector('[data-testid="collapsedControl"] button');
-        if (collapse) collapse.click();
-        else if (expand) expand.click();
-        setTimeout(updateVisibility, 100);
-    };
-
-    doc.body.appendChild(btn);
-    updateVisibility();
-
-    var obs = new MutationObserver(updateVisibility);
-    var sidebar = doc.querySelector('[data-testid="stSidebar"]');
-    if (sidebar) obs.observe(sidebar, {attributes: true, attributeFilter: ['aria-expanded']});
-    obs.observe(doc.body, {childList: true, subtree: true});
-})();
-</script>
-"""
-_components_html(_SIDEBAR_TOGGLE_JS, height=0)
 
 # --- Page navigation ---
 

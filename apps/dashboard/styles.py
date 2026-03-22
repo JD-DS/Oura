@@ -65,8 +65,16 @@ def get_custom_css() -> str:
 
     /* --- Typography — force Inter everywhere --- */
     h1, h2, h3, h4, h5, h6,
-    p, span, label, div, a, li, td, th, input, textarea, select, button {
+    p, label, div, a, li, td, th, input, textarea, select, button {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+    span:not(.material-symbols-rounded):not(.material-symbols-outlined):not(.material-icons) {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    }
+    .material-symbols-rounded,
+    .material-symbols-outlined,
+    .material-icons {
+        font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', 'Material Icons' !important;
     }
     h1, h2, h3, h4, h5, h6 {
         font-weight: 600 !important;
@@ -119,8 +127,6 @@ def get_custom_css() -> str:
 
     /* Sidebar collapse button (close icon inside sidebar when open) */
     [data-testid="stSidebarCollapseButton"] button {
-        color: transparent !important;
-        font-size: 0 !important;
         background: rgba(255,255,255,0.06) !important;
         border: 1px solid rgba(255,255,255,0.1) !important;
         border-radius: 8px !important;
@@ -129,30 +135,36 @@ def get_custom_css() -> str:
         min-height: 0 !important;
         padding: 0 !important;
         cursor: pointer !important;
-        position: relative !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         transition: all 0.15s ease !important;
-    }
-    [data-testid="stSidebarCollapseButton"] button::after {
-        content: '\00D7' !important;
-        font-size: 22px !important;
         color: #a1a1aa !important;
-        line-height: 1 !important;
+        pointer-events: auto !important;
     }
-    [data-testid="stSidebarCollapseButton"] button span {
-        display: none !important;
+    [data-testid="stSidebarCollapseButton"] button svg {
+        width: 18px !important;
+        height: 18px !important;
+        stroke: #a1a1aa !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button .material-symbols-rounded {
+        font-family: 'Material Symbols Rounded' !important;
+        font-size: 20px !important;
+        color: #a1a1aa !important;
     }
     [data-testid="stSidebarCollapseButton"] button:hover {
         background: rgba(255,255,255,0.1) !important;
         border-color: rgba(255,255,255,0.15) !important;
+        color: #f4f4f5 !important;
     }
-    [data-testid="stSidebarCollapseButton"] button:hover::after {
+    [data-testid="stSidebarCollapseButton"] button:hover svg {
+        stroke: #f4f4f5 !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button:hover .material-symbols-rounded {
         color: #f4f4f5 !important;
     }
 
-    /* Sidebar expand button (hamburger icon when sidebar is collapsed) */
+    /* Sidebar expand button (hamburger/arrow when sidebar is collapsed) */
     [data-testid="collapsedControl"] {
         position: fixed !important;
         top: 10px !important;
@@ -161,8 +173,6 @@ def get_custom_css() -> str:
         pointer-events: auto !important;
     }
     [data-testid="collapsedControl"] button {
-        color: transparent !important;
-        font-size: 0 !important;
         background: rgba(12,12,15,0.95) !important;
         border: 1px solid rgba(255,255,255,0.12) !important;
         border-radius: 10px !important;
@@ -171,7 +181,6 @@ def get_custom_css() -> str:
         min-height: 0 !important;
         padding: 0 !important;
         cursor: pointer !important;
-        position: relative !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -180,22 +189,28 @@ def get_custom_css() -> str:
         -webkit-backdrop-filter: blur(12px) !important;
         box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) !important;
         transition: all 0.15s ease !important;
-    }
-    [data-testid="collapsedControl"] button::after {
-        content: '\2630' !important;
-        font-size: 20px !important;
         color: #a1a1aa !important;
-        line-height: 1 !important;
     }
-    [data-testid="collapsedControl"] button span {
-        display: none !important;
+    [data-testid="collapsedControl"] button svg {
+        width: 22px !important;
+        height: 22px !important;
+        stroke: #a1a1aa !important;
+    }
+    [data-testid="collapsedControl"] button .material-symbols-rounded {
+        font-family: 'Material Symbols Rounded' !important;
+        font-size: 22px !important;
+        color: #a1a1aa !important;
     }
     [data-testid="collapsedControl"] button:hover {
         background: rgba(20,20,25,0.95) !important;
         border-color: rgba(45,212,191,0.3) !important;
         box-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 0 0 1px rgba(45,212,191,0.1) !important;
+        color: #2dd4bf !important;
     }
-    [data-testid="collapsedControl"] button:hover::after {
+    [data-testid="collapsedControl"] button:hover svg {
+        stroke: #2dd4bf !important;
+    }
+    [data-testid="collapsedControl"] button:hover .material-symbols-rounded {
         color: #2dd4bf !important;
     }
 
