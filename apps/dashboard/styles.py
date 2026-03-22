@@ -112,16 +112,15 @@ def get_custom_css() -> str:
         border-left-color: #2dd4bf !important;
     }
 
-    /* Sidebar collapse/expand button — hide broken icon text, show arrow */
-    [data-testid="stSidebarCollapseButton"] button,
-    [data-testid="collapsedControl"] button {
+    /* Sidebar collapse button (close icon inside sidebar when open) */
+    [data-testid="stSidebarCollapseButton"] button {
         color: transparent !important;
         font-size: 0 !important;
-        background: rgba(255,255,255,0.04) !important;
-        border: 1px solid rgba(255,255,255,0.06) !important;
-        border-radius: 6px !important;
-        width: 32px !important;
-        height: 32px !important;
+        background: rgba(255,255,255,0.06) !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        border-radius: 8px !important;
+        width: 36px !important;
+        height: 36px !important;
         min-height: 0 !important;
         padding: 0 !important;
         cursor: pointer !important;
@@ -129,28 +128,68 @@ def get_custom_css() -> str:
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        transition: all 0.15s ease !important;
     }
-    [data-testid="stSidebarCollapseButton"] button::after,
+    [data-testid="stSidebarCollapseButton"] button::after {
+        content: '\00D7' !important;
+        font-size: 22px !important;
+        color: #a1a1aa !important;
+        line-height: 1 !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button span {
+        display: none !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button:hover {
+        background: rgba(255,255,255,0.1) !important;
+        border-color: rgba(255,255,255,0.15) !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button:hover::after {
+        color: #f4f4f5 !important;
+    }
+
+    /* Sidebar expand button (hamburger icon when sidebar is collapsed) */
+    [data-testid="collapsedControl"] {
+        position: fixed !important;
+        top: 10px !important;
+        left: 10px !important;
+        z-index: 999990 !important;
+    }
+    [data-testid="collapsedControl"] button {
+        color: transparent !important;
+        font-size: 0 !important;
+        background: rgba(12,12,15,0.95) !important;
+        border: 1px solid rgba(255,255,255,0.12) !important;
+        border-radius: 10px !important;
+        width: 42px !important;
+        height: 42px !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        cursor: pointer !important;
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) !important;
+        transition: all 0.15s ease !important;
+    }
     [data-testid="collapsedControl"] button::after {
-        content: '\2039' !important;
+        content: '\2630' !important;
         font-size: 20px !important;
         color: #a1a1aa !important;
         line-height: 1 !important;
     }
-    [data-testid="collapsedControl"] button::after {
-        content: '\203A' !important;
-    }
-    [data-testid="stSidebarCollapseButton"] button:hover,
-    [data-testid="collapsedControl"] button:hover {
-        background: rgba(255,255,255,0.08) !important;
-    }
-    [data-testid="stSidebarCollapseButton"] button:hover::after,
-    [data-testid="collapsedControl"] button:hover::after {
-        color: #f4f4f5 !important;
-    }
-    [data-testid="stSidebarCollapseButton"] button span,
     [data-testid="collapsedControl"] button span {
         display: none !important;
+    }
+    [data-testid="collapsedControl"] button:hover {
+        background: rgba(20,20,25,0.95) !important;
+        border-color: rgba(45,212,191,0.3) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 0 0 1px rgba(45,212,191,0.1) !important;
+    }
+    [data-testid="collapsedControl"] button:hover::after {
+        color: #2dd4bf !important;
     }
 
     /* ================================================================
