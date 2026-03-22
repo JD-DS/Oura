@@ -2,7 +2,7 @@
 headless = true
 
 [theme]
-primaryColor = "#6C63FF"
-backgroundColor = "#0E1117"
-secondaryBackgroundColor = "#1A1D23"
-textColor = "#FAFAFA"
+primaryColor = "#2dd4bf"
+backgroundColor = "#0c0c10"
+secondaryBackgroundColor = "#16161c"
+textColor = "#f0f0f2"
