@@ -32,28 +32,6 @@ if daily.empty:
     )
     st.stop()
 
-latest = daily.iloc[-1] if not daily.empty else {}
-
-# Key metrics row
-cols = st.columns(5)
-
-_stress_raw = latest.get("stress_summary", "—")
-_stress_map = {"restored": "Good", "normal": "Normal", "stressful": "High"}
-stress_val = _stress_map.get(_stress_raw, _stress_raw) if isinstance(_stress_raw, str) else _stress_raw
-
-metrics = [
-    ("Sleep", latest.get("sleep_score"), ""),
-    ("Ready", latest.get("readiness_score"), ""),
-    ("Activity", latest.get("activity_score"), ""),
-    ("Stress", stress_val, ""),
-    ("SpO2", f"{latest.get('spo2_avg', 0):.0f}%" if latest.get("spo2_avg") else "—", ""),
-]
-
-for i, (label, value, suffix) in enumerate(metrics):
-    with cols[i]:
-        display_value = value if value is not None else "—"
-        st.metric(label, display_value)
-
 st.markdown(section_header("Weekly Trends"), unsafe_allow_html=True)
 
 recent = daily.tail(7)
