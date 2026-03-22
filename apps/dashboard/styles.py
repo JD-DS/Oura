@@ -35,7 +35,6 @@ def get_custom_css() -> str:
 
     /* --- NUKE all Streamlit chrome --- */
     #MainMenu, footer, .stDeployButton,
-    [data-testid="stToolbar"],
     [data-testid="stDecoration"],
     [data-testid="stStatusWidget"],
     button[title="View app in Streamlit Community Cloud"],
@@ -52,9 +51,24 @@ def get_custom_css() -> str:
         background: transparent !important;
         pointer-events: none !important;
     }
+    header[data-testid="stHeader"] [data-testid="stExpandSidebarButton"],
+    header[data-testid="stHeader"] [data-testid="stExpandSidebarButton"] *,
     header[data-testid="stHeader"] [data-testid="collapsedControl"],
     header[data-testid="stHeader"] [data-testid="collapsedControl"] * {
         pointer-events: auto !important;
+    }
+
+    /* Toolbar: keep visible for expand button, hide action buttons */
+    [data-testid="stToolbar"] {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        min-height: 0 !important;
+    }
+    [data-testid="stToolbarActions"],
+    [data-testid="stToolbarActionButton"],
+    [data-testid="stMainMenu"] {
+        display: none !important;
     }
 
     /* --- Main content area --- */
@@ -63,22 +77,13 @@ def get_custom_css() -> str:
         max-width: 1200px;
     }
 
-    /* --- Typography — force Inter everywhere --- */
+    /* --- Typography — force Inter everywhere except Streamlit icons --- */
     h1, h2, h3, h4, h5, h6,
     p, label, div, a, li, td, th, input, textarea, select, button {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     }
-    span:not(.material-symbols-rounded):not(.material-symbols-outlined):not(.material-icons) {
+    span:not([data-testid="stIconMaterial"]):not([data-testid="stIconEmoji"]):not(.material-symbols-rounded):not(.material-symbols-outlined) {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
-    }
-    .material-symbols-rounded {
-        font-family: 'Material Symbols Rounded' !important;
-    }
-    .material-symbols-outlined {
-        font-family: 'Material Symbols Outlined' !important;
-    }
-    .material-icons {
-        font-family: 'Material Icons' !important;
     }
     h1, h2, h3, h4, h5, h6 {
         font-weight: 600 !important;
@@ -151,9 +156,7 @@ def get_custom_css() -> str:
         height: 18px !important;
         stroke: #a1a1aa !important;
     }
-    [data-testid="stSidebarCollapseButton"] button .material-symbols-rounded {
-        font-family: 'Material Symbols Rounded' !important;
-        font-size: 20px !important;
+    [data-testid="stSidebarCollapseButton"] button [data-testid="stIconMaterial"] {
         color: #a1a1aa !important;
     }
     [data-testid="stSidebarCollapseButton"] button:hover {
@@ -164,19 +167,12 @@ def get_custom_css() -> str:
     [data-testid="stSidebarCollapseButton"] button:hover svg {
         stroke: #f4f4f5 !important;
     }
-    [data-testid="stSidebarCollapseButton"] button:hover .material-symbols-rounded {
+    [data-testid="stSidebarCollapseButton"] button:hover [data-testid="stIconMaterial"] {
         color: #f4f4f5 !important;
     }
 
-    /* Sidebar expand button (hamburger/arrow when sidebar is collapsed) */
-    [data-testid="collapsedControl"] {
-        position: fixed !important;
-        top: 10px !important;
-        left: 10px !important;
-        z-index: 1000001 !important;
-        pointer-events: auto !important;
-    }
-    [data-testid="collapsedControl"] button {
+    /* Sidebar expand button (arrow when sidebar is collapsed) */
+    [data-testid="stExpandSidebarButton"] {
         background: rgba(12,12,15,0.95) !important;
         border: 1px solid rgba(255,255,255,0.12) !important;
         border-radius: 10px !important;
@@ -195,26 +191,24 @@ def get_custom_css() -> str:
         transition: all 0.15s ease !important;
         color: #a1a1aa !important;
     }
-    [data-testid="collapsedControl"] button svg {
+    [data-testid="stExpandSidebarButton"] svg {
         width: 22px !important;
         height: 22px !important;
         stroke: #a1a1aa !important;
     }
-    [data-testid="collapsedControl"] button .material-symbols-rounded {
-        font-family: 'Material Symbols Rounded' !important;
-        font-size: 22px !important;
+    [data-testid="stExpandSidebarButton"] [data-testid="stIconMaterial"] {
         color: #a1a1aa !important;
     }
-    [data-testid="collapsedControl"] button:hover {
+    [data-testid="stExpandSidebarButton"]:hover {
         background: rgba(20,20,25,0.95) !important;
         border-color: rgba(45,212,191,0.3) !important;
         box-shadow: 0 4px 20px rgba(0,0,0,0.7), 0 0 0 1px rgba(45,212,191,0.1) !important;
         color: #2dd4bf !important;
     }
-    [data-testid="collapsedControl"] button:hover svg {
+    [data-testid="stExpandSidebarButton"]:hover svg {
         stroke: #2dd4bf !important;
     }
-    [data-testid="collapsedControl"] button:hover .material-symbols-rounded {
+    [data-testid="stExpandSidebarButton"]:hover [data-testid="stIconMaterial"] {
         color: #2dd4bf !important;
     }
 
