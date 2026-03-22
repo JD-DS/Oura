@@ -67,8 +67,14 @@ def get_custom_css() -> str:
     }
     [data-testid="stToolbarActions"],
     [data-testid="stToolbarActionButton"],
+    [data-testid="stAppDeployButton"],
     [data-testid="stMainMenu"] {
         display: none !important;
+    }
+
+    /* Ensure Streamlit icon fonts always render as glyphs */
+    [data-testid="stIconMaterial"] {
+        font-family: 'Material Symbols Rounded' !important;
     }
 
     /* --- Main content area --- */
@@ -135,6 +141,9 @@ def get_custom_css() -> str:
     }
 
     /* Sidebar collapse button (close icon inside sidebar when open) */
+    [data-testid="stSidebarCollapseButton"] {
+        visibility: visible !important;
+    }
     [data-testid="stSidebarCollapseButton"] button {
         background: rgba(255,255,255,0.06) !important;
         border: 1px solid rgba(255,255,255,0.1) !important;
