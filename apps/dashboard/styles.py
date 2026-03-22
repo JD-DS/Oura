@@ -115,39 +115,33 @@ def get_custom_css() -> str:
         border-left-color: #2dd4bf !important;
     }
 
-    /* Fix sidebar collapse button — hide broken icon text, show as clean arrow */
-    [data-testid="stSidebarCollapseButton"] button,
-    button[kind="header"] {
-        font-size: 0 !important;
-        color: transparent !important;
-        width: 32px !important;
-        height: 32px !important;
+    /* Fix sidebar collapse/expand button — hide broken Material Icon text */
+    [data-testid="stSidebarCollapseButton"] button {
+        overflow: hidden !important;
+        text-indent: -9999px !important;
+        width: 28px !important;
+        height: 28px !important;
         min-height: 0 !important;
         padding: 0 !important;
         border-radius: 6px !important;
-        background: rgba(255,255,255,0.04) !important;
-        border: 1px solid rgba(255,255,255,0.06) !important;
-        position: relative !important;
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
         cursor: pointer !important;
+        position: relative !important;
     }
-    [data-testid="stSidebarCollapseButton"] button::after,
-    button[kind="header"]::after {
-        content: '‹' !important;
-        font-size: 16px !important;
-        color: #71717a !important;
+    [data-testid="stSidebarCollapseButton"] button::after {
+        content: '\2039' !important;
+        text-indent: 0 !important;
+        font-size: 18px !important;
+        color: #a1a1aa !important;
         position: absolute !important;
-        inset: 0 !important;
+        top: 0; left: 0; right: 0; bottom: 0 !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
-    [data-testid="stSidebarCollapseButton"] button:hover,
-    button[kind="header"]:hover {
-        background: rgba(255,255,255,0.08) !important;
-    }
-    [data-testid="stSidebarCollapseButton"] button span,
-    button[kind="header"] span {
-        display: none !important;
+    [data-testid="stSidebarCollapseButton"] button:hover {
+        background: rgba(255,255,255,0.1) !important;
     }
 
     /* ================================================================
