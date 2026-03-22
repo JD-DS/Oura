@@ -30,8 +30,9 @@ def _check_demo_mode() -> bool:
     if os.getenv("DEMO_MODE", "").lower() in ("true", "1", "yes"):
         return True
     try:
-        return str(st.secrets.get("DEMO_MODE", "")).lower() in ("true", "1", "yes")
-    except Exception:
+        val = st.secrets["DEMO_MODE"]
+        return str(val).lower() in ("true", "1", "yes")
+    except (KeyError, FileNotFoundError, Exception):
         return False
 
 DEMO_MODE = _check_demo_mode()
